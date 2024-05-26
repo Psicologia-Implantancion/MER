@@ -1,7 +1,7 @@
 <?php
 
 session_start();
-/*hola */
+
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -184,15 +184,21 @@ function registerUser($conn, $email, $username, $password, $password_repeat) {
 function loginUser($conn, $user, $password) {
     $password_md5 = md5($password);
 
-    $sql = "SELECT * FROM login WHERE Usuario='$user' AND Password='$password_md5'";
+    $sql = "SELECT ID_Login, Usuario FROM login WHERE Usuario='$user' AND Password='$password_md5'";
     $result = $conn->query($sql);
 
     if ($result->num_rows == 1) {
-        $_SESSION['username'] = $user;
-        
-        // Aquí configuramos el tipo de usuario en la sesión
-        $user_type = getUserType($conn, $user);
+        $row = $result->fetch_assoc();  
+
+        $_SESSION['username'] = $row['Usuario'];
+        $_SESSION['user_id'] = $row['ID_Login'];  
+
+        $user_id = $row['ID_Login'];
+
+        $user_type = getUserType($conn, $row['Usuario']);
         $_SESSION['user_type'] = $user_type ? $user_type : 'Usuario';
+
+        echo "El ID del usuario es: " . $user_id;
 
         header("Location: index.php#agendar");
         exit();
@@ -200,6 +206,7 @@ function loginUser($conn, $user, $password) {
         return "Usuario no encontrado o contraseña incorrecta";
     }
 }
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['logout'])) {
     logout();
@@ -222,10 +229,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error_message = loginUser($conn, $user, $password);
     }
 }
+
+
+
+
 ?>
-
-
-
 
 
 <!DOCTYPE html>
@@ -678,7 +686,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </tr>
     </tbody>
   </table>
-  <!-- Botones -->
   <div class="button-container">
     <button type="submit">Modificar</button>
     <button type="submit">Cancelar</button>

@@ -6,6 +6,13 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];  // Recupera el ID del usuario desde la sesión
+    echo "El ID del usuario es: " . $user_id;
+} else {
+    echo "El usuario no está autenticado.";
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $servername = "localhost";
     $username = "root";
@@ -58,8 +65,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $fecha_id = $conn->insert_id;
 
                     
-                    $sql_cita = "INSERT INTO cita (`ID_Fecha`, `Hora`, `Monto`, `Id_TipoCita`, `ID_Paciente`, `ID_Psicologa`)
-                                           VALUES ('$fecha_id', '$hora_atencion', '$monto', '$tipo_cita_id', '$paciente_id', '$Psicologa_id')";       
+                    $sql_cita = "INSERT INTO cita (`ID_Fecha`, `Hora`, `Monto`, `Id_TipoCita`, `ID_Paciente`, `ID_Psicologa`,`ID_Login`)
+                                           VALUES ('$fecha_id', '$hora_atencion', '$monto', '$tipo_cita_id', '$paciente_id', '$Psicologa_id', '$user_id')";       
        
                     if ($conn->query($sql_cita) === TRUE) {
                         header("Location: index.php#agendar");
