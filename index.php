@@ -249,7 +249,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
   </style>
 </head>
-<body>
+<div>
 <div id="header-nav">
 <?php if (isUserLoggedIn($conn)): ?>
     <nav class="header-nav">
@@ -663,27 +663,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </tr>
     </thead>
     <tbody>
+        <?php
+        if (isset($_SESSION['user_id'])) {
+            $user_id = $_SESSION['user_id'];  
+        } 
+
+        $sql = "SELECT c.Id_Cita, f.Dia AS Fecha, c.Hora, tc.Tipo AS Tipo, c.Status
+            FROM cita c
+            INNER JOIN fecha f ON c.Id_Fecha = f.Id_Fecha
+            INNER JOIN tipo_cita tc ON c.Id_TipoCita = tc.Id_TipoCita
+            WHERE c.ID_Login = '$user_id'";
+        $result=mysqli_query($conn,$sql);
+        
+        $contador=1;
+    
+        While($mostrar=mysqli_fetch_array($result)){
+        ?>
       <tr>
-        <td>1</td>
-        <td>12-03-2024</td>
-        <td>8:45-9:30</td>
-        <td>Individual</td>
-        <td>Aprobada</td>
+        <td><?php echo $contador++; ?></td>
+        <td><?php echo $mostrar['Fecha']?></td>
+        <td><?php echo $mostrar['Hora'] ?></td>
+        <td><?php echo $mostrar['Tipo']?></td>
+        <td><?php echo $mostrar['Status'] ?></td>
       </tr>
-      <tr>
-        <td>2</td>
-        <td>23-03-2024</td>
-        <td>10:00-10:45</td>
-        <td>Infantil</td>
-        <td>Cancelada</td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>18-04-2024</td>
-        <td>10:45 - 11:30</td>
-        <td>Pareja</td>
-        <td>Reagendada</td>
-      </tr>
+      <?php
+        }
+      ?>
     </tbody>
   </table>
   <div class="button-container">
