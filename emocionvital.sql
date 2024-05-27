@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 07-04-2024 a las 20:23:01
+-- Tiempo de generación: 11-04-2024 a las 18:37:11
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.0.30
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -48,6 +48,27 @@ INSERT INTO `administrador` (`ID_Admi`, `Primer Nombre`, `Segundo Nombre`, `Prim
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `cedula`
+--
+
+CREATE TABLE `cedula` (
+  `ID_Cedula` int(11) NOT NULL,
+  `Tipo_Cedula` enum('V','E','J','P') NOT NULL,
+  `Cedula` varchar(12) NOT NULL,
+  `Num_Hijos` varchar(2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `cedula`
+--
+
+INSERT INTO `cedula` (`ID_Cedula`, `Tipo_Cedula`, `Cedula`, `Num_Hijos`) VALUES
+(1, 'V', '28372278', '1'),
+(2, 'V', '28372278', '');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `cita`
 --
 
@@ -85,7 +106,7 @@ CREATE TABLE `citamenor` (
   `2doNombreRepre` varchar(80) NOT NULL,
   `1erApellidoRepre` varchar(80) NOT NULL,
   `2doApellidoRepre` varchar(80) NOT NULL,
-  `Cedula` varchar(15) NOT NULL,
+  `ID_Cedula` int(11) NOT NULL,
   `Telefono` varchar(15) NOT NULL,
   `correo` varchar(15) NOT NULL,
   `direccion` varchar(20) NOT NULL,
@@ -97,8 +118,8 @@ CREATE TABLE `citamenor` (
 -- Volcado de datos para la tabla `citamenor`
 --
 
-INSERT INTO `citamenor` (`ID_CitaMenor`, `1erNombreInfante`, `2doNombreInfante`, `1erApellidoInfante`, `2doApellidoInfante`, `1erNombreRepre`, `2doNombreRepre`, `1erApellidoRepre`, `2doApellidoRepre`, `Cedula`, `Telefono`, `correo`, `direccion`, `fecha nacimiento`, `status`) VALUES
-(0, 'MARIA', 'JOSE', 'RODRIGUEZ', 'ANDARA', 'MARIA', 'ANTONIETA', 'DE LAS NIEVES', 'SOTELDO', '123456789-1', '1234567890', 'LJINKLNLOMNNK', 'RXTRXRXTRXRCFXRX', '2015-04-01', 'ACTIVO');
+INSERT INTO `citamenor` (`ID_CitaMenor`, `1erNombreInfante`, `2doNombreInfante`, `1erApellidoInfante`, `2doApellidoInfante`, `1erNombreRepre`, `2doNombreRepre`, `1erApellidoRepre`, `2doApellidoRepre`, `ID_Cedula`, `Telefono`, `correo`, `direccion`, `fecha nacimiento`, `status`) VALUES
+(0, 'MARIA', 'JOSE', 'RODRIGUEZ', 'ANDARA', 'MARIA', 'ANTONIETA', 'DE LAS NIEVES', 'SOTELDO', 123456789, '1234567890', 'LJINKLNLOMNNK', 'RXTRXRXTRXRCFXRX', '2015-04-01', 'ACTIVO');
 
 -- --------------------------------------------------------
 
@@ -620,6 +641,28 @@ INSERT INTO `ciudades` (`id_ciudad`, `id_estado`, `ciudad`, `capital`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `direccion`
+--
+
+CREATE TABLE `direccion` (
+  `ID_Direccion` int(11) NOT NULL,
+  `ID_Estados` int(11) NOT NULL,
+  `ID_Municipio` int(11) NOT NULL,
+  `ID_Ciudades` int(11) NOT NULL,
+  `ID_Parroquias` int(11) NOT NULL,
+  `Descripcion` varchar(80) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `direccion`
+--
+
+INSERT INTO `direccion` (`ID_Direccion`, `ID_Estados`, `ID_Municipio`, `ID_Ciudades`, `ID_Parroquias`, `Descripcion`) VALUES
+(1, 3, 29, 130, 353, 'Avenida  principal');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `estados`
 --
 
@@ -663,6 +706,68 @@ INSERT INTO `estados` (`id_estado`, `estado`, `iso_3166-2`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `factoresfamiliares`
+--
+
+CREATE TABLE `factoresfamiliares` (
+  `ID_Familiares` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `factoresfisicos`
+--
+
+CREATE TABLE `factoresfisicos` (
+  `ID_Fisico` int(11) NOT NULL,
+  `EnferemedadMadre` varchar(40) NOT NULL,
+  `EnQueMes` varchar(20) NOT NULL,
+  `DondeSeAtendio` varchar(30) NOT NULL,
+  `EmbarazosPrevios` varchar(20) NOT NULL,
+  `ProblemasTension` varchar(30) NOT NULL,
+  `TiposPartos` varchar(20) NOT NULL,
+  `Llorro` varchar(15) NOT NULL,
+  `Respiracion` varchar(20) NOT NULL,
+  `EstadoRecienNacido` varchar(20) NOT NULL,
+  `Peso` float NOT NULL,
+  `Talla` float NOT NULL,
+  `Defectos_MalFormaciones` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `factoresfisicos`
+--
+
+INSERT INTO `factoresfisicos` (`ID_Fisico`, `EnferemedadMadre`, `EnQueMes`, `DondeSeAtendio`, `EmbarazosPrevios`, `ProblemasTension`, `TiposPartos`, `Llorro`, `Respiracion`, `EstadoRecienNacido`, `Peso`, `Talla`, `Defectos_MalFormaciones`) VALUES
+(1, 'kc', 'zxxz', 'xzx', 'zxz', 'zxz', 'zxzzxzxz', 'xzxz', 'xzxx', 'zxzx', 11, 30, 'zxzx');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `factores_que_motivan`
+--
+
+CREATE TABLE `factores_que_motivan` (
+  `ID_Factores` int(11) NOT NULL,
+  `Referido_Por` varchar(30) NOT NULL,
+  `Diagnostico_Organico` varchar(30) NOT NULL,
+  `ActitudDeLosPadres` varchar(80) NOT NULL,
+  `EstadoEmocionalNiño` varchar(80) NOT NULL,
+  `ConocimientoHospitalizacionActual` varchar(80) NOT NULL,
+  `Temores_CambiosAntelaEnfermedad` varchar(80) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `factores_que_motivan`
+--
+
+INSERT INTO `factores_que_motivan` (`ID_Factores`, `Referido_Por`, `Diagnostico_Organico`, `ActitudDeLosPadres`, `EstadoEmocionalNiño`, `ConocimientoHospitalizacionActual`, `Temores_CambiosAntelaEnfermedad`) VALUES
+(1, 'Daniel', 'sks', 'saslk', 'cccscds', 'scsdcsccdscddscds', 'sax');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `factura`
 --
 
@@ -694,15 +799,24 @@ INSERT INTO `factura` (`ID_Factura`, `ID_Membrete`, `ID_Paciente`, `ID_Psicologo
 CREATE TABLE `historial_medico` (
   `ID_Historial` int(11) NOT NULL,
   `ID_Paciente` int(11) NOT NULL,
-  `ID_Psicologo` int(11) NOT NULL
+  `ID_Psicologo` int(11) NOT NULL,
+  `ID_Factores` int(11) NOT NULL,
+  `ID_Fisico` int(11) NOT NULL,
+  `Edad` int(3) NOT NULL,
+  `Cama` int(80) NOT NULL,
+  `Fecha_Ingreso` date NOT NULL,
+  `Escolaridad` varchar(50) NOT NULL,
+  `Promedio` float NOT NULL,
+  `Escuela` varchar(50) NOT NULL,
+  `LugaQueOcupaFamilia` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `historial_medico`
 --
 
-INSERT INTO `historial_medico` (`ID_Historial`, `ID_Paciente`, `ID_Psicologo`) VALUES
-(1, 1, 1);
+INSERT INTO `historial_medico` (`ID_Historial`, `ID_Paciente`, `ID_Psicologo`, `ID_Factores`, `ID_Fisico`, `Edad`, `Cama`, `Fecha_Ingreso`, `Escolaridad`, `Promedio`, `Escuela`, `LugaQueOcupaFamilia`) VALUES
+(1, 1, 1, 0, 0, 0, 0, '0000-00-00', 'ñl,lñ,ñ', 18, 'sdcdcd', 'ZXz');
 
 -- --------------------------------------------------------
 
@@ -1114,11 +1228,11 @@ CREATE TABLE `paciente` (
   `Segundo Nombre` varchar(80) NOT NULL,
   `Primer Apellido` varchar(80) NOT NULL,
   `Segundo Apellido` varchar(80) NOT NULL,
-  `Cedula` varchar(9) NOT NULL,
+  `ID_Cedula` int(11) NOT NULL,
   `Teléfono` varchar(15) NOT NULL,
   `Fecha_Nacimiento` date NOT NULL,
   `Correo` varchar(80) NOT NULL,
-  `Direccion` varchar(100) NOT NULL,
+  `ID_Direccion` int(11) NOT NULL,
   `StatusPaciente` enum('Activo','Inactivo') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -1126,9 +1240,8 @@ CREATE TABLE `paciente` (
 -- Volcado de datos para la tabla `paciente`
 --
 
-INSERT INTO `paciente` (`ID_Paciente`, `Primer Nombre`, `Segundo Nombre`, `Primer Apellido`, `Segundo Apellido`, `Cedula`, `Teléfono`, `Fecha_Nacimiento`, `Correo`, `Direccion`, `StatusPaciente`) VALUES
-(1, 'lexi', 'Josefina', 'Gimenez', 'Carrasco', '28372278', '04260649763', '0000-00-00', 'leximar@gmail.com', 'Santa Rita', 'Activo'),
-(2, 'Jose', 'David', 'Gimenez', 'Carrasco', '28372278', '04260649763', '2001-05-19', 'josegimenez@gmail.com', 'Santa Rita', 'Activo');
+INSERT INTO `paciente` (`ID_Paciente`, `Primer Nombre`, `Segundo Nombre`, `Primer Apellido`, `Segundo Apellido`, `ID_Cedula`, `Teléfono`, `Fecha_Nacimiento`, `Correo`, `ID_Direccion`, `StatusPaciente`) VALUES
+(1, 'lexi', 'Josefina', 'Gimenez', 'Carrasco', 1, '04260649763', '0000-00-00', 'leximar@gmail.com', 1, 'Activo');
 
 -- --------------------------------------------------------
 
@@ -2309,8 +2422,7 @@ CREATE TABLE `psicologa` (
 --
 
 INSERT INTO `psicologa` (`ID_Psicologa`, `Primer Nombre`, `Segundo Nombre`, `Primer Apellido`, `Segundo Apellido`, `Cedula`, `Teléfono`, `Correo`, `Especialidad`) VALUES
-(1, 'Jose', 'David', 'Gimenez', 'Carrasco', '28372278', '04260649763', 'josegimenez@gmail.com', 'Psicología infantil '),
-(2, 'Jose ', 'David', 'Gimenez', 'Carrasco', '28372278', '04260649763', 'josegimenez@gmail.com ', 'Psicología infantil y adolencente ');
+(1, 'Jose', 'David', 'Gimenez', 'Carrasco', '28372278', '04260649763', 'josegimenez@gmail.com', 'Psicología infantil ');
 
 -- --------------------------------------------------------
 
@@ -2342,243 +2454,10 @@ ALTER TABLE `administrador`
   ADD PRIMARY KEY (`ID_Admi`);
 
 --
+-- Indices de la tabla `cedula`
+--
+ALTER TABLE `cedula`
+  ADD PRIMARY KEY (`ID_Cedula`);
+
+--
 -- Indices de la tabla `cita`
---
-ALTER TABLE `cita`
-  ADD PRIMARY KEY (`ID_Cita`),
-  ADD KEY `Id_TipoCita` (`Id_TipoCita`),
-  ADD KEY `ID_Paciente` (`ID_Paciente`),
-  ADD KEY `ID_Psicologa` (`ID_Psicologa`),
-  ADD KEY `ID_CitaMenor` (`ID_CitaMenor`);
-
---
--- Indices de la tabla `citamenor`
---
-ALTER TABLE `citamenor`
-  ADD PRIMARY KEY (`ID_CitaMenor`);
-
---
--- Indices de la tabla `ciudades`
---
-ALTER TABLE `ciudades`
-  ADD PRIMARY KEY (`id_ciudad`),
-  ADD KEY `id_estado` (`id_estado`);
-
---
--- Indices de la tabla `estados`
---
-ALTER TABLE `estados`
-  ADD PRIMARY KEY (`id_estado`);
-
---
--- Indices de la tabla `factura`
---
-ALTER TABLE `factura`
-  ADD PRIMARY KEY (`ID_Factura`),
-  ADD KEY `ID_Paciente` (`ID_Paciente`),
-  ADD KEY `ID_Psicologo` (`ID_Psicologo`),
-  ADD KEY `ID_Membrete` (`ID_Membrete`);
-
---
--- Indices de la tabla `historial_medico`
---
-ALTER TABLE `historial_medico`
-  ADD PRIMARY KEY (`ID_Historial`),
-  ADD KEY `ID_Paciente` (`ID_Paciente`),
-  ADD KEY `ID_Psicologo` (`ID_Psicologo`);
-
---
--- Indices de la tabla `historico`
---
-ALTER TABLE `historico`
-  ADD PRIMARY KEY (`ID_Historico`),
-  ADD KEY `ID_Paciente` (`ID_Paciente`),
-  ADD KEY `ID_Psicologa` (`ID_Psicologa`),
-  ADD KEY `ID_Admin` (`ID_Admin`),
-  ADD KEY `ID_Factura` (`ID_Factura`),
-  ADD KEY `ID_Historial` (`ID_Historial`);
-
---
--- Indices de la tabla `login`
---
-ALTER TABLE `login`
-  ADD PRIMARY KEY (`ID_Login`),
-  ADD KEY `ID_Paciente` (`ID_Paciente`),
-  ADD KEY `ID_Psicologa` (`ID_Psicologa`),
-  ADD KEY `ID_Admin` (`ID_Admin`);
-
---
--- Indices de la tabla `municipios`
---
-ALTER TABLE `municipios`
-  ADD PRIMARY KEY (`id_municipio`),
-  ADD KEY `id_estado` (`id_estado`);
-
---
--- Indices de la tabla `paciente`
---
-ALTER TABLE `paciente`
-  ADD PRIMARY KEY (`ID_Paciente`);
-
---
--- Indices de la tabla `parroquias`
---
-ALTER TABLE `parroquias`
-  ADD PRIMARY KEY (`id_parroquia`),
-  ADD KEY `id_municipio` (`id_municipio`);
-
---
--- Indices de la tabla `psicologa`
---
-ALTER TABLE `psicologa`
-  ADD PRIMARY KEY (`ID_Psicologa`);
-
---
--- Indices de la tabla `tipo_cita`
---
-ALTER TABLE `tipo_cita`
-  ADD PRIMARY KEY (`Id_TipoCita`);
-
---
--- AUTO_INCREMENT de las tablas volcadas
---
-
---
--- AUTO_INCREMENT de la tabla `administrador`
---
-ALTER TABLE `administrador`
-  MODIFY `ID_Admi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT de la tabla `cita`
---
-ALTER TABLE `cita`
-  MODIFY `ID_Cita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT de la tabla `ciudades`
---
-ALTER TABLE `ciudades`
-  MODIFY `id_ciudad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=523;
-
---
--- AUTO_INCREMENT de la tabla `estados`
---
-ALTER TABLE `estados`
-  MODIFY `id_estado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
-
---
--- AUTO_INCREMENT de la tabla `factura`
---
-ALTER TABLE `factura`
-  MODIFY `ID_Factura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT de la tabla `historial_medico`
---
-ALTER TABLE `historial_medico`
-  MODIFY `ID_Historial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT de la tabla `login`
---
-ALTER TABLE `login`
-  MODIFY `ID_Login` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT de la tabla `municipios`
---
-ALTER TABLE `municipios`
-  MODIFY `id_municipio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=463;
-
---
--- AUTO_INCREMENT de la tabla `paciente`
---
-ALTER TABLE `paciente`
-  MODIFY `ID_Paciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT de la tabla `parroquias`
---
-ALTER TABLE `parroquias`
-  MODIFY `id_parroquia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1139;
-
---
--- AUTO_INCREMENT de la tabla `psicologa`
---
-ALTER TABLE `psicologa`
-  MODIFY `ID_Psicologa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT de la tabla `tipo_cita`
---
-ALTER TABLE `tipo_cita`
-  MODIFY `Id_TipoCita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- Restricciones para tablas volcadas
---
-
---
--- Filtros para la tabla `cita`
---
-ALTER TABLE `cita`
-  ADD CONSTRAINT `cita_ibfk_1` FOREIGN KEY (`ID_Psicologa`) REFERENCES `psicologa` (`ID_Psicologa`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `cita_ibfk_2` FOREIGN KEY (`ID_Paciente`) REFERENCES `paciente` (`ID_Paciente`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `cita_ibfk_3` FOREIGN KEY (`Id_TipoCita`) REFERENCES `tipo_cita` (`Id_TipoCita`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `cita_ibfk_4` FOREIGN KEY (`ID_CitaMenor`) REFERENCES `citamenor` (`ID_CitaMenor`) ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `ciudades`
---
-ALTER TABLE `ciudades`
-  ADD CONSTRAINT `ciudades_ibfk_1` FOREIGN KEY (`id_estado`) REFERENCES `estados` (`id_estado`) ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `factura`
---
-ALTER TABLE `factura`
-  ADD CONSTRAINT `factura_ibfk_1` FOREIGN KEY (`ID_Paciente`) REFERENCES `paciente` (`ID_Paciente`),
-  ADD CONSTRAINT `factura_ibfk_2` FOREIGN KEY (`ID_Psicologo`) REFERENCES `psicologa` (`ID_Psicologa`) ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `historial_medico`
---
-ALTER TABLE `historial_medico`
-  ADD CONSTRAINT `historial_medico_ibfk_1` FOREIGN KEY (`ID_Paciente`) REFERENCES `paciente` (`ID_Paciente`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `historial_medico_ibfk_2` FOREIGN KEY (`ID_Psicologo`) REFERENCES `psicologa` (`ID_Psicologa`) ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `historico`
---
-ALTER TABLE `historico`
-  ADD CONSTRAINT `historico_ibfk_1` FOREIGN KEY (`ID_Paciente`) REFERENCES `paciente` (`ID_Paciente`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `historico_ibfk_2` FOREIGN KEY (`ID_Psicologa`) REFERENCES `psicologa` (`ID_Psicologa`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `historico_ibfk_3` FOREIGN KEY (`ID_Admin`) REFERENCES `administrador` (`ID_Admi`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `historico_ibfk_4` FOREIGN KEY (`ID_Factura`) REFERENCES `factura` (`ID_Factura`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `historico_ibfk_5` FOREIGN KEY (`ID_Historial`) REFERENCES `historial_medico` (`ID_Historial`) ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `login`
---
-ALTER TABLE `login`
-  ADD CONSTRAINT `login_ibfk_1` FOREIGN KEY (`ID_Paciente`) REFERENCES `paciente` (`ID_Paciente`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `login_ibfk_2` FOREIGN KEY (`ID_Admin`) REFERENCES `administrador` (`ID_Admi`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `login_ibfk_3` FOREIGN KEY (`ID_Psicologa`) REFERENCES `psicologa` (`ID_Psicologa`) ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `municipios`
---
-ALTER TABLE `municipios`
-  ADD CONSTRAINT `municipios_ibfk_1` FOREIGN KEY (`id_estado`) REFERENCES `estados` (`id_estado`) ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `parroquias`
---
-ALTER TABLE `parroquias`
-  ADD CONSTRAINT `parroquias_ibfk_1` FOREIGN KEY (`id_municipio`) REFERENCES `municipios` (`id_municipio`) ON UPDATE CASCADE;
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
