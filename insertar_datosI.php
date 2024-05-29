@@ -41,8 +41,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $childSecondLastName = $_POST['childSecondLastName'];
     $childBirthDate = $_POST['childBirthDate'];
     $partnerDate = $_POST['partnerDate'];
-    $appointmentTime = $_POST['appointmentTime'];
+    $appointmentTime = $_POST['appointmentTime']. ":00";
     $amount = $_POST['monto'];
+    $hora_fin = $_POST['hora_fin'] . ":00"; // Agregar segundos para la hora de fin 
+    $duracion = 45;
 
     $sql_direccion = "INSERT INTO direccion (ID_Estados, ID_Municipio, Descripcion)
                       VALUES ('$estado', '$municipio', '$descripcion')";
@@ -71,10 +73,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   ';
    exit();
 } 
-if (!preg_match('/^[0-9]{4}-[0-9]{7}$/', $phone)) {
+
+// Validación para teléfono 
+if (!is_numeric($_POST['phone'])) {  
     echo '
         <script>
-            alert("El teléfono ingresado no es válido, el formato debe ser parecido al siguiente 0123-4567890");
+            alert("El teléfono ingresado no es válido");
             window.history.back(); 
         </script> 
     ';
@@ -103,69 +107,20 @@ $email = filter_var($_POST["email"], FILTER_VALIDATE_EMAIL);
     ';
     exit;
     }
-    $verif_correo = mysqli_query($conn, "SELECT COUNT(*) FROM paciente WHERE Correo LIKE '$email'");
-    if (mysqli_num_rows($verif_correo) > 0){
-        echo'
-            <script>
-                alert("El correo proporcionado ya esta registrado");
-                window.history.back(); 
-            </script> 
-            ';
-        exit();
-    }
+   
 
    // Validación de formato para el campo de cédula 
 if (!preg_match('/^[0-9]+$/', $_POST['idNumber'])) { 
-    echo "La cédula debe contener solo números."; 
-    exit(); 
+    echo'<script>
+    alert("La cédula debe contener solo números");
+    window.history.back(); 
+</script> 
+';
+exit(); 
 }     
 
-switch($vejp){
-    case "V":
-        if($cedula < 1 || $cedula > 99999999 || !preg_match('/[0-9]{9}$/', $cedula)){
-            echo'
-            <script>
-                alert("Error en la cedula");
-                window.history.back(); 
-            </script> 
-            ';
-            exit();
-        }
-    break;
-    case "E":
-        if($cedula < 1 || $cedula > 999999999 || !preg_match('/[0-9]{10}$/', $cedula)){
-            echo'
-            <script>
-                alert("Error en la cedula");
-                window.history.back(); 
-            </script> 
-            ';
-            exit();
-        }
-    break;
-    case "J":
-        if($cedula < 1 || $cedula > 9999999 || !preg_match('/[0-9]{7}$/', $cedula)){
-            echo'
-            <script>
-                alert("Error en la cedula");
-                window.history.back(); 
-            </script> 
-            ';
-            exit();
-        }
-    break;
-}
-    
-$verif_cedula = mysqli_query($con, "SELECT COUNT(*) FROM paciente WHERE Cedula LIKE '$cedula'");
-if (mysqli_num_rows($verif_cedula) > 0){
-    echo'
-        <script>
-            alert("El correo proporcionado ya esta registrado");
-            window.history.back(); 
-        </script> 
-        ';
-    exit();
-    }
+   
+
         
     if (!preg_match('/^\d+$/', $Nhijo)) {
         echo'<script>
@@ -186,22 +141,35 @@ if (mysqli_num_rows($verif_cedula) > 0){
 
        // Validación de primer nombre y segundo nombre 
         if (!preg_match('/^[a-zA-Z ]+$/', $_POST['childFirstName']) || !preg_match('/^[a-zA-Z ]+$/', $_POST['childSecondName'])) { 
-        echo "El primer nombre y segundo nombre solo pueden contener letras y espacios."; 
-        exit(); 
+            echo '<script>
+            alert("El primer nombre del niño y segundo nombre del niño solo pueden contener letras y espacios.");
+            window.history.back(); 
+          </script>
+          ';
+           exit();
     } 
     
            // Validación de primer apellido y segundo apellido 
         if (!preg_match('/^[a-zA-Z ]+$/', $_POST['childFirstLastName']) || !preg_match('/^[a-zA-Z ]+$/', $_POST['childSecondLastName'])) { 
-        echo "El primer apellido y segundo apellido solo pueden contener letras y espacios."; 
-        exit(); 
+            echo '<script>
+            alert("El primer apellido del niño y segundo apellido del niño solo pueden contener letras y espacios.");
+            window.history.back(); 
+          </script>
+          ';
+           exit();
     }
     // Validación de la fecha de nacimiento 
     $childBirthDate = $_POST['childBirthDate']; 
         $hoy = date("Y-m-d"); 
  
        if ($childBirthDate>= $hoy) { 
-       echo "La fecha de nacimiento debe ser anterior a la fecha actual."; 
-       exit(); 
+       echo'
+        <script>
+            alert("La fecha de nacimiento debe ser anterior a la fecha actual.");
+            window.history.back(); 
+        </script> 
+        ';
+    exit();
     }  
 
 
@@ -219,8 +187,67 @@ if (mysqli_num_rows($verif_cedula) > 0){
                 if ($conn->query($sql_fecha) === TRUE) {
                     $fecha_id = $conn->insert_id;
 
-                    $sql_cita = "INSERT INTO cita (ID_Fecha, Hora, Monto, Id_TipoCita, ID_Paciente, ID_CitaMenor, ID_Psicologa, ID_Login)
-                                 VALUES ('$fecha_id', '$appointmentTime', '$amount', 2, '$paciente_id', '$menor_id', 1, '$user_id')";
+                    $sql_cita = "INSERT INTO cita (ID_Fecha, Hora, Hora_Fin, Monto, Id_TipoCita, ID_Paciente, ID_CitaMenor, ID_Psicologa, ID_Login)
+                                 VALUES ('$fecha_id', '$appointmentTime', '$hora_fin', '$amount', 2, '$paciente_id', '$menor_id', 1, '$user_id')";
+                                 // Validar formato de la hora de inicio
+if (!preg_match('/^[0-9]{2}:[0-9]{2}:[0-9]{2}$/', $appointmentTime)) {
+    echo '
+    <script>
+        alert("La hora de inicio debe estar en el formato HH:MM:SS.");
+        window.history.back();
+    </script>
+    ';
+    exit();
+}
+
+$nueva_cita_inicio = DateTime::createFromFormat('H:i:s', $appointmentTime);
+if (!$nueva_cita_inicio) {
+    echo '
+    <script>
+        alert("La hora de inicio no es válida.");
+        window.history.back();
+    </script>
+    ';
+    exit();
+}
+
+// Validar que la hora de inicio esté en los intervalos permitidos
+$hora_inicio = (int)$nueva_cita_inicio->format('H');
+if (!($hora_inicio >= 8 && $hora_inicio < 12) && !($hora_inicio >= 13 && $hora_inicio < 16)) {
+    echo '
+    <script>
+        alert("La hora de atención debe estar entre 08:00-12:00 o 13:00-16:00.");
+        window.history.back();
+    </script>
+    ';
+    exit();
+}
+
+$nueva_cita_fin = clone $nueva_cita_inicio;
+$nueva_cita_fin->modify("+$duracion minutes");
+
+// Consultar citas existentes para la misma fecha y psicóloga
+$sql_existentes = "SELECT `Hora` FROM `cita` WHERE `ID_Fecha` = '$fecha_id' AND `ID_Psicologa` = '$psicologa_id'";
+$result = $conn->query($sql_existentes);
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $cita_inicio = DateTime::createFromFormat('H:i:s', $row['Hora']);
+        $cita_fin = clone $cita_inicio;
+        $cita_fin->modify("+$duracion minutes");
+
+        // Verificar si hay solapamiento
+        if ($nueva_cita_inicio < $cita_fin && $nueva_cita_fin > $cita_inicio) {
+            echo '
+            <script>
+                alert("La cita se solapa con una existente.");
+                window.history.back();
+            </script>
+            ';
+            exit();
+        }
+    }
+}
                     if ($conn->query($sql_cita) === TRUE) {
                         header("Location: index.php#agendar");
                         exit();
