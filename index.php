@@ -136,7 +136,7 @@ function getPrecioCitaPareja($conn) {
 }
 
 function getPrecioCitaInfante($conn) {
-    $sql_tipo_cita_Infante = "SELECT Precio FROM tipo_cita WHERE Tipo = 'Infante'";
+    $sql_tipo_cita_Infante = "SELECT Precio FROM tipo_cita WHERE Tipo = 'Infantil'";
     $result_tipo_cita_Infante = $conn->query($sql_tipo_cita_Infante);
 
     if ($result_tipo_cita_Infante->num_rows > 0) {
@@ -266,8 +266,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </li>
                 <?php if ($_SESSION['user_type'] !== 'Psicologo'): ?> <!-- Mostrar solo si no es un Psicologo -->
                     <li><a href="#" onclick="showAgendadas()">Citas Agendadas</a></li>
+                    <?php endif; ?>
                 <?php endif; ?>
-            <?php endif; ?>
+                <?php if ($_SESSION['user_type'] === 'Psicologo'): ?>
+                    <li><a href="#" onclick="showhistorial('historial-form')">Historial Medico</a></li>
+                    <li><a href="#" onclick="showlista('Lista-de-citas')">Lista de citas</a></li>
+                <?php endif; ?>
             <li>
                 <form id="logout-form" method="post">
                     <input type="hidden" name="logout">
@@ -397,8 +401,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="date" id="date" name="fecha_cita" required>
         </div>
         <div class="input-field full-width">
-            <label for="time">Hora de Atención (45min) *</label>
-            <input type="time" id="time" name="hora_atencion" required>
+            <label for="hora_atencion">Hora de Atención (45min) *</label>
+            <input type="time" id="hora_atencion" name="hora_atencion" required onchange="actualizarHoraFin()">
+        </div>
+        <div class="input-field full-width">
+            <label for="hora_fin">Hora de Fin *</label>
+            <input type="time" id="hora_fin" name="hora_fin" readonly>
         </div>
         <div class="input-field full-width">
             <label for="price">Monto *</label>
@@ -540,7 +548,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
         <div class="input-field full-width">
             <label for="partnerTime">Hora de Atención (45min) *</label>
-            <input type="time" id="partnerTime" name="partnerTime">
+            <input type="time" id="partnerTime_P" name="partnerTime" required onchange="actualizarHoraFinP()">
+        </div>
+        <div class="input-field full-width">
+            <label for="hora_fin">Hora de Fin *</label>
+            <input type="time" id="hora_fin_P" name="hora_fin" readonly>
         </div>
         <div class="input-field full-width">
             <label for="price">Monto *</label>
@@ -635,9 +647,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <label for="partnerDate">Fecha de la Cita *</label>
             <input type="date" id="partnerDate" name="partnerDate">
         </div>
-        <div class="input-field">
+        <div class="input-field full-width">
             <label for="appointmentTime">Hora de Atención (45min) *</label>
-            <input type="time" id="appointmentTime" name="appointmentTime" required>
+            <input type="time" id="appointmentTime_I" name="appointmentTime" required onchange="actualizarHoraFinI()">
+        </div>
+        <div class="input-field full-width">
+            <label for="hora_fin">Hora de Fin *</label>
+            <input type="time" id="hora_fin_I" name="hora_fin" readonly>
         </div>
         <div class="input-field full-width">
             <label for="price">Monto *</label>
@@ -652,6 +668,73 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
 <div id="citas-agendadas" class="container hide">
+  <form id="citas-form" method="post" action="modificar_cita.php">
+    <h3>Citas Pendientes</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Núm.Citas</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Tipo</th>
+          <th>Status</th>
+          <th>Seleccionar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+        if (isset($_SESSION['user_id'])) {
+            $user_id = $_SESSION['user_id'];  
+        }
+
+        $sql = "SELECT c.Id_Cita, f.Id_Fecha, f.Dia AS Fecha, c.Hora, tc.Tipo AS Tipo, c.Status
+                FROM cita c
+                INNER JOIN fecha f ON c.Id_Fecha = f.Id_Fecha
+                INNER JOIN tipo_cita tc ON c.Id_TipoCita = tc.Id_TipoCita
+                WHERE c.ID_Login = '$user_id'";
+        $result = mysqli_query($conn, $sql);
+
+        $contador = 1;
+        $contadorr = 1;
+        $citasPendientes = '';
+        $citasRealizadas = '';
+
+        while ($mostrar = mysqli_fetch_array($result)) {
+            if ($mostrar['Status'] === 'Realizada' || $mostrar['Status'] === 'Suspendida' ) {
+                $citasRealizadas .= '<tr>
+                                      <td>' . $contador++ . '</td>
+                                      <td>' . $mostrar['Fecha'] . '</td>
+                                      <td>' . $mostrar['Hora'] . '</td>
+                                      <td>' . $mostrar['Tipo'] . '</td>
+                                      <td>' . $mostrar['Status'] . '</td>
+                                    </tr>';
+            } else {
+                $citasPendientes .= '<tr>
+                                      <td>' . $contadorr++ . '</td>
+                                      <td>' . $mostrar['Fecha'] . '</td>
+                                      <td>' . $mostrar['Hora'] . '</td>
+                                      <td>' . $mostrar['Tipo'] . '</td>
+                                      <td>' . $mostrar['Status'] . '</td>
+                                      <td><input type="radio" name="cita_seleccionada" value="' . $mostrar['Id_Cita'] . '" data-id-fecha="' . $mostrar['Id_Fecha'] . '"></td>
+                                    </tr>';
+            }
+        }
+
+        echo $citasPendientes;
+        ?>
+      </tbody>
+    </table>
+    <div class="button-container">
+      <input type="radio" id="reagendar" name="accion" value="reagendar">
+      <label for="reagendar">Reagendar</label>
+      <input type="radio" id="cancelar" name="accion" value="cancelar">
+      <label for="cancelar">Cancelar</label>
+    </div>
+    <button type="button" onclick="modificarCita()">Modificar</button>
+  </form>
+
+  <!-- Tabla para Citas Realizadas -->
+  <h3>Citas Realizadas</h3>
   <table>
     <thead>
       <tr>
@@ -663,42 +746,514 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </tr>
     </thead>
     <tbody>
-        <?php
-        if (isset($_SESSION['user_id'])) {
-            $user_id = $_SESSION['user_id'];  
-        } 
-
-        $sql = "SELECT c.Id_Cita, f.Dia AS Fecha, c.Hora, tc.Tipo AS Tipo, c.Status
-            FROM cita c
-            INNER JOIN fecha f ON c.Id_Fecha = f.Id_Fecha
-            INNER JOIN tipo_cita tc ON c.Id_TipoCita = tc.Id_TipoCita
-            WHERE c.ID_Login = '$user_id'";
-        $result=mysqli_query($conn,$sql);
-        
-        $contador=1;
-    
-        While($mostrar=mysqli_fetch_array($result)){
-        ?>
-      <tr>
-        <td><?php echo $contador++; ?></td>
-        <td><?php echo $mostrar['Fecha']?></td>
-        <td><?php echo $mostrar['Hora'] ?></td>
-        <td><?php echo $mostrar['Tipo']?></td>
-        <td><?php echo $mostrar['Status'] ?></td>
-      </tr>
       <?php
-        }
+      echo $citasRealizadas;
       ?>
     </tbody>
   </table>
-  <div class="button-container">
-    <button type="submit">Modificar</button>
-    <button type="submit">Cancelar</button>
-    <button type="submit">Regresar</button>
-  </div>
 </div>
 
+
+
+
+
+<div id="Lista-de-citas" class="container hide">
+    <h1>Lista de citas</h1>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nr cita</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Tipo</th>
+                    <th>Status</th>
+                    <th>Seleccionar</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php
+            $sql = "SELECT c.Id_Cita, f.Dia AS Fecha, c.Hora, tc.Tipo AS Tipo, c.Status
+                    FROM cita c
+                    INNER JOIN fecha f ON c.Id_Fecha = f.Id_Fecha
+                    INNER JOIN tipo_cita tc ON c.Id_TipoCita = tc.Id_TipoCita
+                    WHERE c.ID_Psicologa = '1'";
+            $result = mysqli_query($conn, $sql);
+    
+            $contador = 1;
+    
+            while ($mostrar = mysqli_fetch_array($result)) {
+                ?>
+                <tr>
+                    <td><?php echo $contador++; ?></td>
+                    <td><?php echo $mostrar['Fecha']?></td>
+                    <td><?php echo $mostrar['Hora'] ?></td>
+                    <td><?php echo $mostrar['Tipo']?></td>
+                    <td><?php echo $mostrar['Status'] ?></td>
+                    <td><input type="radio" name="cita" class="cita-radio" data-id="<?php echo $mostrar['Id_Cita']; ?>"></td>
+                </tr>
+                <?php
+            }
+            ?>
+            </tbody>
+        </table>
+    </div>
+    <div class="actions">
+        <div>
+            <label>Modificar Status</label>
+        </div>
+        <div>
+            <input type="radio" id="aprobar" name="status" value="Agendada">
+            <label for="aprobar">Aprobar</label>
+            <input type="radio" id="cancelar" name="status" value="Suspendida">
+            <label for="cancelar">Cancelar</label>
+            <input type="radio" id="Realizada" name="status" value="Realizada">
+            <label for="Realizada">Realizada</label>
+        </div>
+        <div>
+            <button id="modificar-btn">Modificar</button>
+        </div>
+    </div>
+</div>
+
+
+<div id="historial-form" class="container hide">
+<body>
+    <h1>HISTORIA CLÍNICA PSICOLÓGICA</h1>
+    <form method="POST" action="insertarDatoshm.php">
+   
+        <div class="section">
+            <h2>I. DATOS DE IDENTIFICACIÓN</h2>
+            <div class="input-group">
+                <label>Nombre:</label>
+                <input type="text" name="nombre" required>
+            </div>
+            <div class="flex">
+                <div class="input-group">
+                    <label>Cédula:</label>
+                    <input type="text" name="cedula" required>
+                </div>
+                <div class="input-group">
+                    <label>Fecha de Nacimiento:</label>
+                    <input type="date" name="fecha_nacimiento" required>
+                </div>
+            </div>
+            <div class="flex">
+                <div class="input-group">
+                    <label>Escolaridad:</label>
+                    <input type="text" name="escolaridad">
+                </div>
+                <div class="input-group">
+                    <label>Promedio:</label>
+                    <input type="number" name="promedio" step="0.01">
+                </div>
+            </div>
+            <div class="flex">
+                <div class="input-group">
+                    <label>Escuela:</label>
+                    <input type="text" name="escuela">
+                </div>
+                <div class="input-group">
+                    <label>Lugar que ocupa en la familia:</label>
+                    <input type="text" name="lugar_familia">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Dirección:</label>
+                <input type="text" name="direccion">
+            </div>
+            <div class="input-group">
+                <label>Teléfono:</label>
+                <input type="text" name="telefono">
+            </div>
+        </div>
+
+       
+
+        <div class="section">
+            <h2>II. FACTORES QUE MOTIVAN A LA CONSULTA</h2>
+            <div class="textarea-group">
+                <label>Motivos de consulta:</label>
+                <textarea name="motivos_consulta"></textarea>
+            </div>
+            <div class="input-group">
+                <label>Referido por:</label>
+                <input type="text" name="referido_por">
+            </div>
+            <div class="input-group">
+                <label>Diagnóstico orgánico:</label>
+                <input type="text" name="diagnostico_organico">
+            </div>
+            <div class="textarea-group">
+                <label>Actitud de los padres ante el problema:</label>
+                <textarea name="actitud_padres"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>Estado emocional actual del Niño (a):</label>
+                <textarea name="estado_emocional"></textarea>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>III. FACTORES FÍSICOS</h2>
+            <div class="textarea-group">
+                <label>1. DESARROLLO PRENATAL Y NATAL:</label>
+                <textarea name="desarrollo_prenatal"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>2. DESARROLLO DE LA PRIMERA INFANCIA:</label>
+                <textarea name="desarrollo_primera_infancia"></textarea>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>IV. FACTORES FAMILIARES</h2>
+            <div class="input-group">
+                <label>1. DATOS FAMILIARES:</label>
+                <div class="flex">
+                    <div class="input-group">
+                        <label>Papá - Nombre:</label>
+                        <input type="text" name="papa_nombre">
+                    </div>
+                    <div class="input-group">
+                        <label>Papá - Apellido:</label>
+                        <input type="text" name="papa_apellido">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Mamá - Nombre:</label>
+                        <input type="text" name="mama_nombre">
+                    </div>
+                    <div class="input-group">
+                        <label>Mamá - Apellido:</label>
+                        <input type="text" name="mama_apellido">
+                    </div>
+
+                </div>
+                <div class="flex">
+                    <div class="input-group">
+                        <label>Papá - Salud física:</label>
+                        <input type="text" name="papa_salud_fisica">
+                    </div>
+                    <div class="input-group">
+                        <label>Mamá - Salud física:</label>
+                        <input type="text" name="mama_salud_fisica">
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="input-group">
+                        <label>Papá - Nivel educativo:</label>
+                        <input type="text" name="papa_nivel_educativo">
+                    </div>
+                    <div class="input-group">
+                        <label>Mamá - Nivel educativo:</label>
+                        <input type="text" name="mama_nivel_educativo">
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="input-group">
+                        <label>Papá - Trabajo actual:</label>
+                        <input type="text" name="papa_trabajo_actual">
+                    </div>
+                    <div class="input-group">
+                        <label>Mamá - Trabajo actual:</label>
+                        <input type="text" name="mama_trabajo_actual">
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="input-group">
+                        <label>Papá - Horario de trabajo:</label>
+                        <input type="text" name="papa_horario_trabajo">
+                    </div>
+                    <div class="input-group">
+                        <label>Mamá - Horario de trabajo:</label>
+                        <input type="text" name="mama_horario_trabajo">
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="input-group">
+                        <label>Papá - Hábitos:</label>
+                        <input type="text" name="papa_habitos">
+                    </div>
+                    <div class="input-group">
+                        <label>Mamá - Hábitos:</label>
+                        <input type="text" name="mama_habitos">
+                    </div>
+                </div>
+            </div>
+
+            <div class="textarea-group">
+                <label>2. EXPERIENCIAS TRAUMÁTICAS DEL NIÑO:</label>
+                <textarea name="experiencias_traumaticas"></textarea>
+            </div>
+            <div class="input-group">
+                <label>Pérdida de algún familiar o ser querido:</label>
+                <input type="text" name="perdida_familiar">
+            </div>
+            <div class="input-group">
+                <label>¿Quién era?:</label>
+                <input type="text" name="quien_era">
+            </div>
+            <div class="textarea-group">
+                <label>¿Cómo fue?:</label>
+                <textarea name="como_fue"></textarea>
+            </div>
+            <div class="input-group">
+                <label>Edad que tenía el niño:</label>
+                <input type="text" name="edad_nino">
+            </div>
+            <div class="input-group">
+                <label>¿Presenció el suceso?:</label>
+                <input type="text" name="presencio_suceso">
+            </div>
+            <div class="textarea-group">
+                <label>Reacción del niño ante esto:</label>
+                <textarea name="reaccion_nino"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>Accidentes del niño:</label>
+                <textarea name="accidentes_nino"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>Castigos graves:</label>
+                <textarea name="castigos_graves"></textarea>
+            </div>
+            <div class="input-group">
+                <label>De parte de quién:</label>
+                <input type="text" name="parte_quien">
+            </div>
+            <div class="input-group">
+                <label>Edad del niño:</label>
+                <input type="text" name="edad_castigos">
+            </div>
+            <div class="textarea-group">
+                <label>Los problemas del niño son causados por:</label>
+                <textarea name="problemas_causas"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>Problemas físicos:</label>
+                <textarea name="problemas_fisicos"></textarea>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>V. FACTORES DE LA PERSONALIDAD Y CONDUCTA</h2>
+            <div class="textarea-group">
+                <label>1. HÁBITOS E INTERESES</label>
+            </div>
+            <div class="textarea-group">
+                <label>a) COMIDA:</label>
+                <textarea name="comida"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>b) SUEÑO:</label>
+                <textarea name="sueno"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>c) ELIMINACIONES:</label>
+                <textarea name="eliminaciones"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>d) MANÍAS Y TICS:</label>
+                <textarea name="manias_tics"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>e) HISTORIA SEXUAL:</label>
+                <textarea name="historia_sexual"></textarea>
+            </div>
+
+            <div class="textarea-group">
+                <label>2. RASGOS DE CARÁCTER</label>
+            </div>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="timido" value="Timido"> Tímido</label>
+                <label><input type="checkbox" name="agresivo" value="Agresivo"> Agresivo</label>
+                <label><input type="checkbox" name="tranquilo" value="Tranquilo"> Tranquilo</label>
+                <label><input type="checkbox" name="irritable" value="Irritable"> Irritable</label>
+                <label><input type="checkbox" name="alegre" value="Alegre"> Alegre</label>
+                <label><input type="checkbox" name="triste" value="Triste"> Triste</label>
+                <label><input type="checkbox" name="cooperativo" value="Cooperador"> Cooperador</label>
+                <label><input type="checkbox" name="negativista" value="Negativista"> Negativista</label>
+                <label><input type="checkbox" name="sereno" value="Sereno"> Sereno</label>
+                <label><input type="checkbox" name="impulsivo" value="Impulsivo"> Impulsivo</label>
+                <label><input type="checkbox" name="confiado" value="Confiado"> Confiado en sí</label>
+                <label><input type="checkbox" name="frio" value="Frio"> Frío</label>
+                <label><input type="checkbox" name="sociable" value="Sociable"> Sociable</label>
+                <label><input type="checkbox" name="retardado" value="Retardado"> Retardado</label>
+                <label><input type="checkbox" name="equilibrado" value="Equilibrado"> Equilibrado</label>
+                <label><input type="checkbox" name="nervioso" value="Nervioso"> Nervioso</label>
+                <label><input type="checkbox" name="carinoso" value="Carinoso"> Cariñoso</label>
+                <label><input type="checkbox" name="inseguro" value="Inseguro"> Inseguro</label>
+                <label><input type="checkbox" name="juega" value="Juega"> Juega</label>
+                <label><input type="checkbox" name="no_juega" value="No_juega"> No juega</label>
+                <label><input type="checkbox" name="controlado" value="Controlado"> Controlado</label>
+                <label><input type="checkbox" name="emotivo" value="Emotivo"> Emotivo</label>
+                <label><input type="checkbox" name="seguro" value="Seguro"> Seguro</label>
+                <label><input type="checkbox" name="amable" value="Amable"> Amable</label>
+                <label><input type="checkbox" name="desconsiderado" value="Desconsiderado"> Desconsiderado</label>
+                <label><input type="checkbox" name="laborioso" value="Laborioso"> Laborioso</label>
+                <label><input type="checkbox" name="perezoso" value="Perezoso"> Perezoso</label>
+                <label><input type="checkbox" name="desconfiado" value="Desconfiado"> Desconfiado</label>
+                <label><input type="checkbox" name="dominante" value="Dominante"> Dominante</label>
+                <label><input type="checkbox" name="sumiso" value="Sumiso"> Sumiso</label>
+                <label><input type="checkbox" name="disciplinado" value="Disciplinado"> Disciplinado</label>
+                <label><input type="checkbox" name="indisiplinado" value="Indisciplinado"> Indisciplinado</label>
+                <label><input type="checkbox" name="rebelde" value="Rebelde"> Rebelde</label>
+                <label><input type="checkbox" name="obediente" value="Obediente"> Obediente</label>
+                <label><input type="checkbox" name="ordenado" value="Ordenado"> Ordenado</label>
+                <label><input type="checkbox" name="desordenado" value="Desordenado"> Desordenado</label>
+                <label>Tendencias Destructivas:</label>
+                <textarea name="tendencias_destructivas"></textarea>
+            </div>
+
+            
+        </div>
+
+
+        <div class="section">
+            <h2>VI. FACTORES HEREDITARIOS</h2>
+            <div class="textarea-group">
+                <label>INCIDENCIA DE ANOMALÍAS EN FAMILIARES CONSANGUÍNEOS:</label>
+                <textarea name="incidencia_anomalias"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>TRATAMIENTO MÉDICO POR NERVIOSISMO:</label>
+                <textarea name="tratamiento_nerviosismo"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>ALCOHOLISMO (GRADO), MANIFESTACIONES, ETC:</label>
+                <textarea name="alcoholismo"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>ABUSO DE DROGAS, CALMANTES, ETC:</label>
+                <textarea name="abuso_drogas"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>DEBILIDAD MENTAL:</label>
+                <textarea name="debilidad_mental"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>CONVULSIONES, DESMAYOS, TEMBLORES, ETC:</label>
+                <textarea name="convulsiones_desmayos"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>ETS (ENFERMEDADES SEXUALES, FORMA, MOTIVOS):</label>
+                <textarea name="ets"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>SUICIDIO (FORMAS, MOTIVOS):</label>
+                <textarea name="suicidio"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>Anormalidades (PROSTITUCIÓN, CRIMINALIDAD, DELITOS, RECLUSIÓN, ETC):</label>
+                <textarea name="anormalidades"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>TRASTORNOS DEL HABLA (TARTAMUDEZ, SORDERA MUEDEZ, ETC):</label>
+                <textarea name="trastornos_habla"></textarea>
+            </div>
+            <div class="textarea-group">
+                <label>TRASTORNOS DE LA VISTA (CEGUERA, MIOPIA, ETC):</label>
+                <textarea name="trastornos_vista"></textarea>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>VII. IMPRESIÓN PSICOLÓGICA</h2>
+            <div class="textarea-group">
+                <label>(Signos y síntomas, personalidad, adaptación psicológica a la enfermedad, al tratamiento, cirugía, e internamientos, relación médico-paciente-enfermera, expectativas ante la patología):</label>
+                <textarea name="impresion_psicologica"></textarea>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>VIII. RECOMENDACIONES</h2>
+            <div class="textarea-group">
+                <textarea name="recomendaciones"></textarea>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>IX. PLAN PSICOTERAPÉUTICO</h2>
+            <div class="textarea-group">
+                <textarea name="plan_psicoterapeutico"></textarea>
+            </div>
+        </div>
+        <input type="submit" name="Save" value="Guardar">
+    </form>
+</body>
+</div>
+
+
+
 <script>
+
+function modificarCita() {
+    const citaSeleccionada = document.querySelector('input[name="cita_seleccionada"]:checked');
+    const accionSeleccionada = document.querySelector('input[name="accion"]:checked');
+
+    if (!citaSeleccionada) {
+        alert('Por favor, seleccione una cita.');
+        return;
+    }
+
+    if (!accionSeleccionada) {
+        alert('Por favor, seleccione una acción (Reagendar o Cancelar).');
+        return;
+    }
+
+    const idCita = citaSeleccionada.value;
+    const idFecha = citaSeleccionada.getAttribute('data-id-fecha');
+
+    if (accionSeleccionada.value === 'reagendar') {
+        // Redireccionar a la pantalla para cambiar la fecha y hora, pasando también el id_fecha
+        window.location.href = 'reagendar.php?id_cita=' + idCita + '&id_fecha=' + idFecha;
+    } else if (accionSeleccionada.value === 'cancelar') {
+        // Redireccionar a la página para cancelar la cita
+        const form = document.getElementById('citas-form');
+        form.action = 'modificar_cita.php';
+        form.submit();
+    }
+}
+
+
+
+
+
+
+document.getElementById('modificar-btn').addEventListener('click', function() {
+    // Obtener la cita seleccionada
+    const selectedCita = document.querySelector('input[name="cita"]:checked');
+    if (!selectedCita) {
+        alert('Por favor, seleccione una cita.');
+        return;
+    }
+    
+    // Obtener el nuevo estado seleccionado
+    const selectedStatus = document.querySelector('input[name="status"]:checked');
+    if (!selectedStatus) {
+        alert('Por favor, seleccione un estado.');
+        return;
+    }
+    
+    const citaId = selectedCita.getAttribute('data-id');
+    const newStatus = selectedStatus.value;
+
+    // Enviar la solicitud para actualizar el estado
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'update_cita_status.php', true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        if (this.status === 200) {
+            alert('Estado actualizado con éxito');
+            location.reload();  // Recargar la página para mostrar los cambios
+        } else {
+            alert('Error al actualizar el estado');
+        }
+    };
+    xhr.send(`id=${citaId}&status=${newStatus}`);
+});
+
   function showForm(formId) {
     var forms = document.querySelectorAll('.container');
     for (var i = 0; i < forms.length; i++) {
@@ -714,6 +1269,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         forms[i].classList.add('hide');
     }
     document.getElementById('citas-agendadas').classList.remove('hide');
+  }
+
+  function showhistorial() {
+    var forms = document.querySelectorAll('.container');
+    for (var i = 0; i < forms.length; i++) {
+        forms[i].classList.add('hide');
+    }
+    document.getElementById('historial-form').classList.remove('hide');
+  }
+
+  function showlista() {
+    var forms = document.querySelectorAll('.container');
+    for (var i = 0; i < forms.length; i++) {
+        forms[i].classList.add('hide');
+    }
+    document.getElementById('Lista-de-citas').classList.remove('hide');
   }
 
   const loginLink = document.getElementById('login-link');
@@ -776,7 +1347,93 @@ function showMunicipiosI() {
     var municipioSelect = document.getElementById("city_i");
     municipioSelect.disabled = estadoSelect.value === "";
 }
+function esHoraValida(hora) {
+            const [hours, minutes] = hora.split(':').map(Number);
+            // Validar si está en el intervalo permitido
+            if ((hours >= 8 && hours < 12) || (hours >= 13 && hours < 16)) {
+                return true;
+            }
+            return false;
+        }
 
+        function validarHora() {
+            const horaAtencion = document.getElementById('hora_atencion').value;
+            if (horaAtencion && !esHoraValida(horaAtencion)) {
+                alert('La hora de atención debe estar entre 08:00-12:00 o 13:00-16:00.');
+                document.getElementById('hora_atencion').value = '';
+                document.getElementById('hora_fin').value = '';
+            } else {
+                actualizarHoraFin();
+            }
+        }
+
+        function actualizarHoraFin() {
+            const horaAtencion = document.getElementById('hora_atencion').value;
+            if (horaAtencion) {
+                const [hours, minutes] = horaAtencion.split(':');
+                const date = new Date();
+                date.setHours(parseInt(hours));
+                date.setMinutes(parseInt(minutes) + 45);
+                date.setSeconds(0);
+
+                const horaFin = date.toTimeString().substring(0, 5);
+                document.getElementById('hora_fin').value = horaFin;
+            } else {
+                document.getElementById('hora_fin').value = '';
+            }
+        }
+        function validarHoraP() {
+            const horaAtencion = document.getElementById('partnerTime_P').value;
+            if (horaAtencion && !esHoraValida(horaAtencion)) {
+                alert('La hora de atención debe estar entre 08:00-12:00 o 13:00-16:00.');
+                document.getElementById('partnerTime_P').value = '';
+                document.getElementById('hora_fin_P').value = '';
+            } else {
+                actualizarHoraFin();
+            }
+        }
+
+        function actualizarHoraFinP() {
+            const horaAtencion = document.getElementById('partnerTime_P').value;
+            if (horaAtencion) {
+                const [hours, minutes] = horaAtencion.split(':');
+                const date = new Date();
+                date.setHours(parseInt(hours));
+                date.setMinutes(parseInt(minutes) + 45);
+                date.setSeconds(0);
+
+                const horaFin = date.toTimeString().substring(0, 5);
+                document.getElementById('hora_fin_P').value = horaFin;
+            } else {
+                document.getElementById('hora_fin_P').value = '';
+            }
+        }
+        function validarHoraI() {
+            const horaAtencion = document.getElementById('appointmentTime_I').value;
+            if (horaAtencion && !esHoraValida(horaAtencion)) {
+                alert('La hora de atención debe estar entre 08:00-12:00 o 13:00-16:00.');
+                document.getElementById('appointmentTime_I').value = '';
+                document.getElementById('hora_fin_I').value = '';
+            } else {
+                actualizarHoraFinI();
+            }
+        }
+
+        function actualizarHoraFinI() {
+            const horaAtencion = document.getElementById('appointmentTime_I').value;
+            if (horaAtencion) {
+                const [hours, minutes] = horaAtencion.split(':');
+                const date = new Date();
+                date.setHours(parseInt(hours));
+                date.setMinutes(parseInt(minutes) + 45);
+                date.setSeconds(0);
+
+                const horaFin = date.toTimeString().substring(0, 5);
+                document.getElementById('hora_fin_I').value = horaFin;
+            } else {
+                document.getElementById('hora_fin_I').value = '';
+            }
+        }
 </script>
 
 </body>
