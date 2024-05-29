@@ -761,40 +761,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <h1>Lista de citas</h1>
     <div class="table-container">
         <table>
+        <h3>Citas Pendientes</h3>
             <thead>
                 <tr>
                     <th>Nr cita</th>
                     <th>Fecha</th>
-                    <th>Hora</th>
+                    <th>Hora de Inicio</th>
+                    <th>Hora de Finalizacion</th>
                     <th>Tipo</th>
                     <th>Status</th>
                     <th>Seleccionar</th>
                 </tr>
             </thead>
             <tbody>
-            <?php
-            $sql = "SELECT c.Id_Cita, f.Dia AS Fecha, c.Hora, tc.Tipo AS Tipo, c.Status
-                    FROM cita c
-                    INNER JOIN fecha f ON c.Id_Fecha = f.Id_Fecha
-                    INNER JOIN tipo_cita tc ON c.Id_TipoCita = tc.Id_TipoCita
-                    WHERE c.ID_Psicologa = '1'";
-            $result = mysqli_query($conn, $sql);
-    
-            $contador = 1;
-    
-            while ($mostrar = mysqli_fetch_array($result)) {
-                ?>
-                <tr>
-                    <td><?php echo $contador++; ?></td>
-                    <td><?php echo $mostrar['Fecha']?></td>
-                    <td><?php echo $mostrar['Hora'] ?></td>
-                    <td><?php echo $mostrar['Tipo']?></td>
-                    <td><?php echo $mostrar['Status'] ?></td>
-                    <td><input type="radio" name="cita" class="cita-radio" data-id="<?php echo $mostrar['Id_Cita']; ?>"></td>
-                </tr>
                 <?php
-            }
-            ?>
+                $sql = "SELECT c.Id_Cita, f.Dia AS Fecha, c.Hora, c.Hora_Fin, tc.Tipo AS Tipo, c.Status
+                        FROM cita c
+                        INNER JOIN fecha f ON c.Id_Fecha = f.Id_Fecha
+                        INNER JOIN tipo_cita tc ON c.Id_TipoCita = tc.Id_TipoCita
+                        WHERE c.ID_Psicologa = '1'";
+                $result = mysqli_query($conn, $sql);
+
+                $contador = 1;
+                $contadorr = 1;
+                $citasPendientes = '';
+                $citasRealizadas = '';
+
+                while ($mostrar = mysqli_fetch_array($result)) {
+                    if ($mostrar['Status'] === 'Realizada' || $mostrar['Status'] === 'Suspendida') {
+                        $citasPendientes .= '<tr>
+                                          <td>' . $contador++ . '</td>
+                                          <td>' . $mostrar['Fecha'] . '</td>
+                                          <td>' . $mostrar['Hora'] . '</td>
+                                          <td>' . $mostrar['Hora_Fin'] . '</td>
+                                          <td>' . $mostrar['Tipo'] . '</td>
+                                          <td>' . $mostrar['Status'] . '</td>
+                                          
+                                        </tr>';
+                    } else {
+                        $citasRealizadas .= '<tr>
+                                          <td>' . $contadorr++ . '</td>
+                                          <td>' . $mostrar['Fecha'] . '</td>
+                                          <td>' . $mostrar['Hora'] . '</td>
+                                          <td>' . $mostrar['Hora_Fin'] . '</td>
+                                          <td>' . $mostrar['Tipo'] . '</td>
+                                          <td>' . $mostrar['Status'] . '</td>
+                                          <td><input type="radio" name="cita" class="cita-radio" data-id="' . $mostrar['Id_Cita'] . '"></td>
+                                        </tr>';
+                    }
+                }
+
+                echo $citasRealizadas;
+                ?>
             </tbody>
         </table>
     </div>
@@ -813,6 +831,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div>
             <button id="modificar-btn">Modificar</button>
         </div>
+        <h3>Citas Realizadas</h3>
+        <table>
+    <thead>
+      <tr>
+        <th>Núm.Citas</th>
+        <th>Fecha</th>
+        <th>Hora de Inicio</th>
+        <th>Hora de Finalizacion</th>
+        <th>Tipo</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php
+      echo $citasPendientes;
+      
+      ?>
+    </tbody>
+  </table>
     </div>
 </div>
 
@@ -1102,10 +1139,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label><input type="checkbox" name="obediente" value="Obediente"> Obediente</label>
                 <label><input type="checkbox" name="ordenado" value="Ordenado"> Ordenado</label>
                 <label><input type="checkbox" name="desordenado" value="Desordenado"> Desordenado</label>
-                <label>Tendencias Destructivas:</label>
-                <textarea name="tendencias_destructivas"></textarea>
+                
             </div>
-
+            <label>Tendencias Destructivas:</label>
+                <textarea name="tendencias_destructivas"></textarea>
             
         </div>
 
