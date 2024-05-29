@@ -136,7 +136,7 @@ function getPrecioCitaPareja($conn) {
 }
 
 function getPrecioCitaInfante($conn) {
-    $sql_tipo_cita_Infante = "SELECT Precio FROM tipo_cita WHERE Tipo = 'Infante'";
+    $sql_tipo_cita_Infante = "SELECT Precio FROM tipo_cita WHERE Tipo = 'Infantil'";
     $result_tipo_cita_Infante = $conn->query($sql_tipo_cita_Infante);
 
     if ($result_tipo_cita_Infante->num_rows > 0) {
@@ -401,8 +401,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="date" id="date" name="fecha_cita" required>
         </div>
         <div class="input-field full-width">
-            <label for="time">Hora de Atención (45min) *</label>
-            <input type="time" id="time" name="hora_atencion" required>
+            <label for="hora_atencion">Hora de Atención (45min) *</label>
+            <input type="time" id="hora_atencion" name="hora_atencion" required onchange="actualizarHoraFin()">
+        </div>
+        <div class="input-field full-width">
+            <label for="hora_fin">Hora de Fin *</label>
+            <input type="time" id="hora_fin" name="hora_fin" readonly>
         </div>
         <div class="input-field full-width">
             <label for="price">Monto *</label>
@@ -544,7 +548,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
         <div class="input-field full-width">
             <label for="partnerTime">Hora de Atención (45min) *</label>
-            <input type="time" id="partnerTime" name="partnerTime">
+            <input type="time" id="partnerTime_P" name="partnerTime" required onchange="actualizarHoraFinP()">
+        </div>
+        <div class="input-field full-width">
+            <label for="hora_fin">Hora de Fin *</label>
+            <input type="time" id="hora_fin_P" name="hora_fin" readonly>
         </div>
         <div class="input-field full-width">
             <label for="price">Monto *</label>
@@ -639,9 +647,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <label for="partnerDate">Fecha de la Cita *</label>
             <input type="date" id="partnerDate" name="partnerDate">
         </div>
-        <div class="input-field">
+        <div class="input-field full-width">
             <label for="appointmentTime">Hora de Atención (45min) *</label>
-            <input type="time" id="appointmentTime" name="appointmentTime" required>
+            <input type="time" id="appointmentTime_I" name="appointmentTime" required onchange="actualizarHoraFinI()">
+        </div>
+        <div class="input-field full-width">
+            <label for="hora_fin">Hora de Fin *</label>
+            <input type="time" id="hora_fin_I" name="hora_fin" readonly>
         </div>
         <div class="input-field full-width">
             <label for="price">Monto *</label>
@@ -655,7 +667,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
 
-<div id="citas-agendadas" class="container">
+<div id="citas-agendadas" class="container hide">
   <form id="citas-form" method="post" action="modificar_cita.php">
     <h3>Citas Pendientes</h3>
     <table>
@@ -1090,11 +1102,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label><input type="checkbox" name="obediente" value="Obediente"> Obediente</label>
                 <label><input type="checkbox" name="ordenado" value="Ordenado"> Ordenado</label>
                 <label><input type="checkbox" name="desordenado" value="Desordenado"> Desordenado</label>
-                <label><input type="checkbox" name="tendencias_destructivas" value="tendencias_destructivas"> Tendencias Destructivas</label>
+                <label>Tendencias Destructivas:</label>
+                <textarea name="tendencias_destructivas"></textarea>
             </div>
 
             
         </div>
+
 
         <div class="section">
             <h2>VI. FACTORES HEREDITARIOS</h2>
@@ -1333,7 +1347,93 @@ function showMunicipiosI() {
     var municipioSelect = document.getElementById("city_i");
     municipioSelect.disabled = estadoSelect.value === "";
 }
+function esHoraValida(hora) {
+            const [hours, minutes] = hora.split(':').map(Number);
+            // Validar si está en el intervalo permitido
+            if ((hours >= 8 && hours < 12) || (hours >= 13 && hours < 16)) {
+                return true;
+            }
+            return false;
+        }
 
+        function validarHora() {
+            const horaAtencion = document.getElementById('hora_atencion').value;
+            if (horaAtencion && !esHoraValida(horaAtencion)) {
+                alert('La hora de atención debe estar entre 08:00-12:00 o 13:00-16:00.');
+                document.getElementById('hora_atencion').value = '';
+                document.getElementById('hora_fin').value = '';
+            } else {
+                actualizarHoraFin();
+            }
+        }
+
+        function actualizarHoraFin() {
+            const horaAtencion = document.getElementById('hora_atencion').value;
+            if (horaAtencion) {
+                const [hours, minutes] = horaAtencion.split(':');
+                const date = new Date();
+                date.setHours(parseInt(hours));
+                date.setMinutes(parseInt(minutes) + 45);
+                date.setSeconds(0);
+
+                const horaFin = date.toTimeString().substring(0, 5);
+                document.getElementById('hora_fin').value = horaFin;
+            } else {
+                document.getElementById('hora_fin').value = '';
+            }
+        }
+        function validarHoraP() {
+            const horaAtencion = document.getElementById('partnerTime_P').value;
+            if (horaAtencion && !esHoraValida(horaAtencion)) {
+                alert('La hora de atención debe estar entre 08:00-12:00 o 13:00-16:00.');
+                document.getElementById('partnerTime_P').value = '';
+                document.getElementById('hora_fin_P').value = '';
+            } else {
+                actualizarHoraFin();
+            }
+        }
+
+        function actualizarHoraFinP() {
+            const horaAtencion = document.getElementById('partnerTime_P').value;
+            if (horaAtencion) {
+                const [hours, minutes] = horaAtencion.split(':');
+                const date = new Date();
+                date.setHours(parseInt(hours));
+                date.setMinutes(parseInt(minutes) + 45);
+                date.setSeconds(0);
+
+                const horaFin = date.toTimeString().substring(0, 5);
+                document.getElementById('hora_fin_P').value = horaFin;
+            } else {
+                document.getElementById('hora_fin_P').value = '';
+            }
+        }
+        function validarHoraI() {
+            const horaAtencion = document.getElementById('appointmentTime_I').value;
+            if (horaAtencion && !esHoraValida(horaAtencion)) {
+                alert('La hora de atención debe estar entre 08:00-12:00 o 13:00-16:00.');
+                document.getElementById('appointmentTime_I').value = '';
+                document.getElementById('hora_fin_I').value = '';
+            } else {
+                actualizarHoraFinI();
+            }
+        }
+
+        function actualizarHoraFinI() {
+            const horaAtencion = document.getElementById('appointmentTime_I').value;
+            if (horaAtencion) {
+                const [hours, minutes] = horaAtencion.split(':');
+                const date = new Date();
+                date.setHours(parseInt(hours));
+                date.setMinutes(parseInt(minutes) + 45);
+                date.setSeconds(0);
+
+                const horaFin = date.toTimeString().substring(0, 5);
+                document.getElementById('hora_fin_I').value = horaFin;
+            } else {
+                document.getElementById('hora_fin_I').value = '';
+            }
+        }
 </script>
 
 </body>
