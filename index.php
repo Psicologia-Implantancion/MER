@@ -53,11 +53,21 @@ function isAdmin($conn) {
     return $userType === 'Administrador';
 }
 
-function loadMunicipiosOptions($conn) {
+function loadMunicipiosOptions($conn, $selected_estado = null) {
     $sql = "SELECT municipios.id_municipio, municipios.municipio, estados.estado 
             FROM municipios 
             INNER JOIN estados ON municipios.id_estado = estados.id_estado";
-    $result = $conn->query($sql);
+    
+    if ($selected_estado) {
+        $sql .= " WHERE municipios.id_estado = ?";
+    }
+    
+    $stmt = $conn->prepare($sql);
+    if ($selected_estado) {
+        $stmt->bind_param("i", $selected_estado);
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $municipio_options = "<option value=''>Seleccione...</option>";
@@ -65,7 +75,7 @@ function loadMunicipiosOptions($conn) {
             $municipio_id = $row["id_municipio"];
             $municipio = $row["municipio"];
             $estado = $row["estado"];
-            $municipio_options .= "<option value='$municipio_id'>$municipio ($estado)</option>";
+            $municipio_options .= "<option value='$municipio_id'>$municipio</option>";
         }
     } else {
         $municipio_options = "<option value=''>No hay Municipios disponibles</option>";
@@ -90,6 +100,12 @@ function loadEstadosOptions($conn) {
     }
 
     return $estado_options;
+}
+
+// Procesar la solicitud AJAX para cargar municipios
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_estado'])) {
+    echo loadMunicipiosOptions($conn, $_POST['id_estado']);
+    exit;
 }
 
 function loadTipoCedulaOptions($conn) {
@@ -380,17 +396,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="email" id="email" name="correo" required>
         </div>
         <div class="input-field half-width">
-            <label for="state">Estado *</label>
-            <select id="state" name="estado" required onchange="showMunicipios()">
-                <?php echo loadEstadosOptions($conn); ?>
-            </select>
-        </div>
-        <div class="input-field half-width">
-            <label for="city">Municipio *</label>
-            <select id="city" name="municipio" required disabled>
-                <?php echo loadMunicipiosOptions($conn); ?>
-            </select>
-        </div>
+        <label for="state">Estado *</label>
+        <select id="state" name="estado" required onchange="showMunicipios()">
+            <?php echo loadEstadosOptions($conn); ?>
+        </select>
+    </div>
+    <div class="input-field half-width">
+        <label for="city">Municipio *</label>
+        <select id="city" name="municipio" required disabled>
+            <option value=''>Seleccione un estado primero</option>
+        </select>
+    </div>
         <div class="input-field full-width">
             <label for="direccion">Descripción de dirección:</label>
             <input type="text" id="direccion" name="descripcion" placeholder="Ingrese una descripción de su dirección">
@@ -465,17 +481,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="email" id="email" name="email">
         </div>
         <div class="input-field half-width">
-            <label for="state_partner">Estado *</label>
-            <select id="state_partner" name="estado" required onchange="showMunicipiosPartner()">
-                <?php echo loadEstadosOptions($conn); ?>
-            </select>
-        </div>
-        <div class="input-field half-width">
-            <label for="city_partner">Municipio *</label>
-            <select id="city_partner" name="municipio" required disabled>
-                <?php echo loadMunicipiosOptions($conn); ?>
-            </select>
-        </div>
+        <label for="state_partner">Estado *</label>
+        <select id="state_partner" name="estado" required onchange="showMunicipiosPartner()">
+            <?php echo loadEstadosOptions($conn); ?>
+        </select>
+    </div>
+    <div class="input-field half-width">
+        <label for="city_partner">Municipio *</label>
+        <select id="city_partner" name="municipio" required disabled>
+            <option value=''>Seleccione un estado primero</option>
+        </select>
+    </div>
         <div class="input-field full-width">
             <label for="direccion">Descripción de dirección:</label>
             <input type="text" id="direccion" name="descripcion" placeholder="Ingrese una descripción de su dirección">
@@ -526,17 +542,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="email" id="partnerEmail" name="partnerEmail">
         </div>
         <div class="input-field half-width">
-            <label for="state">Estado *</label>
-            <select id="state_p" name="estado2" required onchange="showMunicipiosP()">
-                <?php echo loadEstadosOptions($conn); ?>
-            </select>
-        </div>
-        <div class="input-field half-width">
-            <label for="city">Municipio *</label>
-            <select id="city_p" name="municipio2" required disabled>
-                <?php echo loadMunicipiosOptions($conn); ?>
-            </select>
-        </div>
+        <label for="state_p">Estado *</label>
+        <select id="state_p" name="estado2" required onchange="showMunicipiosP()">
+            <?php echo loadEstadosOptions($conn); ?>
+        </select>
+    </div>
+    <div class="input-field half-width">
+        <label for="city_p">Municipio *</label>
+        <select id="city_p" name="municipio2" required disabled>
+            <option value=''>Seleccione un estado primero</option>
+        </select>
+    </div>
         <div class="input-field full-width">
             <label for="direccion">Descripción de dirección:</label>
             <input type="text" id="direccion" name="descripcion" placeholder="Ingrese una descripción de su dirección">
@@ -607,17 +623,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="email" id="email" name="email" required>
         </div>
         <div class="input-field half-width">
-            <label for="state">Estado *</label>
-            <select id="state_i" name="estado" required onchange="showMunicipiosI()">
-                <?php echo loadEstadosOptions($conn); ?>
-            </select>
-        </div>
-        <div class="input-field half-width">
-            <label for="city">Municipio *</label>
-            <select id="city_i" name="municipio" required disabled>
-                <?php echo loadMunicipiosOptions($conn); ?>
-            </select>
-        </div>
+        <label for="state">Estado *</label>
+        <select id="state_i" name="estado" required onchange="showMunicipiosI()">
+            <?php echo loadEstadosOptions($conn); ?>
+        </select>
+    </div>
+    <div class="input-field half-width">
+        <label for="city">Municipio *</label>
+        <select id="city_i" name="municipio" required disabled>
+            <option value=''>Seleccione un estado primero</option>
+        </select>
+    </div>
         <div class="input-field full-width">
             <label for="direccion">Descripción de dirección:</label>
             <input type="text" id="direccion" name="descripcion" placeholder="Ingrese una descripción de su dirección">
@@ -1361,29 +1377,95 @@ document.getElementById('modificar-btn').addEventListener('click', function() {
   });
 
   function showMunicipios() {
-    var estadoSelect = document.getElementById("state");
-    var municipioSelect = document.getElementById("city");
-    
-    
-    municipioSelect.disabled = estadoSelect.value === "";
-}
-function showMunicipiosPartner() {
-    var estadoSelect = document.getElementById("state_partner");
-    var municipioSelect = document.getElementById("city_partner");
-    municipioSelect.disabled = estadoSelect.value === "";
-}
+            var estadoSelect = document.getElementById('state');
+            var municipioSelect = document.getElementById('city');
+            var estado_id = estadoSelect.value;
 
-function showMunicipiosP() {
-    var estadoSelect = document.getElementById("state_p");
-    var municipioSelect = document.getElementById("city_p");
-    municipioSelect.disabled = estadoSelect.value === "";
-}
+            if (estado_id === '') {
+                municipioSelect.innerHTML = "<option value=''>Seleccione un estado primero</option>";
+                municipioSelect.disabled = true;
+                return;
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    municipioSelect.innerHTML = xhr.responseText;
+                    municipioSelect.disabled = false;
+                }
+            };
+            xhr.send('id_estado=' + estado_id);
+        }
+        function showMunicipiosPartner() {
+            var estadoSelect = document.getElementById('state_partner');
+            var municipioSelect = document.getElementById('city_partner');
+            var estado_id = estadoSelect.value;
+
+            if (estado_id === '') {
+                municipioSelect.innerHTML = "<option value=''>Seleccione un estado primero</option>";
+                municipioSelect.disabled = true;
+                return;
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    municipioSelect.innerHTML = xhr.responseText;
+                    municipioSelect.disabled = false;
+                }
+            };
+            xhr.send('id_estado=' + estado_id);
+        }
+
+        function showMunicipiosP() {
+            var estadoSelect = document.getElementById('state_p');
+            var municipioSelect = document.getElementById('city_p');
+            var estado_id = estadoSelect.value;
+
+            if (estado_id === '') {
+                municipioSelect.innerHTML = "<option value=''>Seleccione un estado primero</option>";
+                municipioSelect.disabled = true;
+                return;
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    municipioSelect.innerHTML = xhr.responseText;
+                    municipioSelect.disabled = false;
+                }
+            };
+            xhr.send('id_estado=' + estado_id);
+        }
 
 function showMunicipiosI() {
-    var estadoSelect = document.getElementById("state_i");
-    var municipioSelect = document.getElementById("city_i");
-    municipioSelect.disabled = estadoSelect.value === "";
-}
+            var estadoSelect = document.getElementById('state_i');
+            var municipioSelect = document.getElementById('city_i');
+            var estado_id = estadoSelect.value;
+
+            if (estado_id === '') {
+                municipioSelect.innerHTML = "<option value=''>Seleccione un estado primero</option>";
+                municipioSelect.disabled = true;
+                return;
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    municipioSelect.innerHTML = xhr.responseText;
+                    municipioSelect.disabled = false;
+                }
+            };
+            xhr.send('id_estado=' + estado_id);
+        }
 function esHoraValida(hora) {
             const [hours, minutes] = hora.split(':').map(Number);
             // Validar si está en el intervalo permitido
