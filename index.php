@@ -53,11 +53,21 @@ function isAdmin($conn) {
     return $userType === 'Administrador';
 }
 
-function loadMunicipiosOptions($conn) {
+function loadMunicipiosOptions($conn, $selected_estado = null) {
     $sql = "SELECT municipios.id_municipio, municipios.municipio, estados.estado 
             FROM municipios 
             INNER JOIN estados ON municipios.id_estado = estados.id_estado";
-    $result = $conn->query($sql);
+    
+    if ($selected_estado) {
+        $sql .= " WHERE municipios.id_estado = ?";
+    }
+    
+    $stmt = $conn->prepare($sql);
+    if ($selected_estado) {
+        $stmt->bind_param("i", $selected_estado);
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $municipio_options = "<option value=''>Seleccione...</option>";
@@ -65,7 +75,7 @@ function loadMunicipiosOptions($conn) {
             $municipio_id = $row["id_municipio"];
             $municipio = $row["municipio"];
             $estado = $row["estado"];
-            $municipio_options .= "<option value='$municipio_id'>$municipio ($estado)</option>";
+            $municipio_options .= "<option value='$municipio_id'>$municipio</option>";
         }
     } else {
         $municipio_options = "<option value=''>No hay Municipios disponibles</option>";
@@ -90,6 +100,12 @@ function loadEstadosOptions($conn) {
     }
 
     return $estado_options;
+}
+
+// Procesar la solicitud AJAX para cargar municipios
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_estado'])) {
+    echo loadMunicipiosOptions($conn, $_POST['id_estado']);
+    exit;
 }
 
 function loadTipoCedulaOptions($conn) {
@@ -380,17 +396,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="email" id="email" name="correo" required>
         </div>
         <div class="input-field half-width">
-            <label for="state">Estado *</label>
-            <select id="state" name="estado" required onchange="showMunicipios()">
-                <?php echo loadEstadosOptions($conn); ?>
-            </select>
-        </div>
-        <div class="input-field half-width">
-            <label for="city">Municipio *</label>
-            <select id="city" name="municipio" required disabled>
-                <?php echo loadMunicipiosOptions($conn); ?>
-            </select>
-        </div>
+        <label for="state">Estado *</label>
+        <select id="state" name="estado" required onchange="showMunicipios()">
+            <?php echo loadEstadosOptions($conn); ?>
+        </select>
+    </div>
+    <div class="input-field half-width">
+        <label for="city">Municipio *</label>
+        <select id="city" name="municipio" required disabled>
+            <option value=''>Seleccione un estado primero</option>
+        </select>
+    </div>
         <div class="input-field full-width">
             <label for="direccion">Descripción de dirección:</label>
             <input type="text" id="direccion" name="descripcion" placeholder="Ingrese una descripción de su dirección">
@@ -465,17 +481,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="email" id="email" name="email">
         </div>
         <div class="input-field half-width">
-            <label for="state_partner">Estado *</label>
-            <select id="state_partner" name="estado" required onchange="showMunicipiosPartner()">
-                <?php echo loadEstadosOptions($conn); ?>
-            </select>
-        </div>
-        <div class="input-field half-width">
-            <label for="city_partner">Municipio *</label>
-            <select id="city_partner" name="municipio" required disabled>
-                <?php echo loadMunicipiosOptions($conn); ?>
-            </select>
-        </div>
+        <label for="state_partner">Estado *</label>
+        <select id="state_partner" name="estado" required onchange="showMunicipiosPartner()">
+            <?php echo loadEstadosOptions($conn); ?>
+        </select>
+    </div>
+    <div class="input-field half-width">
+        <label for="city_partner">Municipio *</label>
+        <select id="city_partner" name="municipio" required disabled>
+            <option value=''>Seleccione un estado primero</option>
+        </select>
+    </div>
         <div class="input-field full-width">
             <label for="direccion">Descripción de dirección:</label>
             <input type="text" id="direccion" name="descripcion" placeholder="Ingrese una descripción de su dirección">
@@ -526,17 +542,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="email" id="partnerEmail" name="partnerEmail">
         </div>
         <div class="input-field half-width">
-            <label for="state">Estado *</label>
-            <select id="state_p" name="estado2" required onchange="showMunicipiosP()">
-                <?php echo loadEstadosOptions($conn); ?>
-            </select>
-        </div>
-        <div class="input-field half-width">
-            <label for="city">Municipio *</label>
-            <select id="city_p" name="municipio2" required disabled>
-                <?php echo loadMunicipiosOptions($conn); ?>
-            </select>
-        </div>
+        <label for="state_p">Estado *</label>
+        <select id="state_p" name="estado2" required onchange="showMunicipiosP()">
+            <?php echo loadEstadosOptions($conn); ?>
+        </select>
+    </div>
+    <div class="input-field half-width">
+        <label for="city_p">Municipio *</label>
+        <select id="city_p" name="municipio2" required disabled>
+            <option value=''>Seleccione un estado primero</option>
+        </select>
+    </div>
         <div class="input-field full-width">
             <label for="direccion">Descripción de dirección:</label>
             <input type="text" id="direccion" name="descripcion" placeholder="Ingrese una descripción de su dirección">
@@ -607,17 +623,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="email" id="email" name="email" required>
         </div>
         <div class="input-field half-width">
-            <label for="state">Estado *</label>
-            <select id="state_i" name="estado" required onchange="showMunicipiosI()">
-                <?php echo loadEstadosOptions($conn); ?>
-            </select>
-        </div>
-        <div class="input-field half-width">
-            <label for="city">Municipio *</label>
-            <select id="city_i" name="municipio" required disabled>
-                <?php echo loadMunicipiosOptions($conn); ?>
-            </select>
-        </div>
+        <label for="state">Estado *</label>
+        <select id="state_i" name="estado" required onchange="showMunicipiosI()">
+            <?php echo loadEstadosOptions($conn); ?>
+        </select>
+    </div>
+    <div class="input-field half-width">
+        <label for="city">Municipio *</label>
+        <select id="city_i" name="municipio" required disabled>
+            <option value=''>Seleccione un estado primero</option>
+        </select>
+    </div>
         <div class="input-field full-width">
             <label for="direccion">Descripción de dirección:</label>
             <input type="text" id="direccion" name="descripcion" placeholder="Ingrese una descripción de su dirección">
@@ -675,7 +691,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <tr>
           <th>Núm.Citas</th>
           <th>Fecha</th>
-          <th>Hora</th>
+          <th>Hora de Inicio</th>
+          <th>Hora de Finalizacion</th>
           <th>Tipo</th>
           <th>Status</th>
           <th>Seleccionar</th>
@@ -687,7 +704,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $user_id = $_SESSION['user_id'];  
         }
 
-        $sql = "SELECT c.Id_Cita, f.Id_Fecha, f.Dia AS Fecha, c.Hora, tc.Tipo AS Tipo, c.Status
+        $sql = "SELECT c.Id_Cita, f.Id_Fecha, f.Dia AS Fecha, c.Hora, c.Hora_Fin, tc.Tipo AS Tipo, c.Status
                 FROM cita c
                 INNER JOIN fecha f ON c.Id_Fecha = f.Id_Fecha
                 INNER JOIN tipo_cita tc ON c.Id_TipoCita = tc.Id_TipoCita
@@ -705,6 +722,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                       <td>' . $contador++ . '</td>
                                       <td>' . $mostrar['Fecha'] . '</td>
                                       <td>' . $mostrar['Hora'] . '</td>
+                                      <td>' . $mostrar['Hora_Fin'] . '</td>
                                       <td>' . $mostrar['Tipo'] . '</td>
                                       <td>' . $mostrar['Status'] . '</td>
                                     </tr>';
@@ -713,6 +731,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                       <td>' . $contadorr++ . '</td>
                                       <td>' . $mostrar['Fecha'] . '</td>
                                       <td>' . $mostrar['Hora'] . '</td>
+                                      <td>' . $mostrar['Hora_Fin'] . '</td>
                                       <td>' . $mostrar['Tipo'] . '</td>
                                       <td>' . $mostrar['Status'] . '</td>
                                       <td><input type="radio" name="cita_seleccionada" value="' . $mostrar['Id_Cita'] . '" data-id-fecha="' . $mostrar['Id_Fecha'] . '"></td>
@@ -740,7 +759,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <tr>
         <th>Núm.Citas</th>
         <th>Fecha</th>
-        <th>Hora</th>
+        <th>Hora de Inicio</th>
+        <th>Hora de Finalizacion</th>
         <th>Tipo</th>
         <th>Status</th>
       </tr>
@@ -761,40 +781,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <h1>Lista de citas</h1>
     <div class="table-container">
         <table>
+        <h3>Citas Pendientes</h3>
             <thead>
                 <tr>
                     <th>Nr cita</th>
                     <th>Fecha</th>
-                    <th>Hora</th>
+                    <th>Hora de Inicio</th>
+                    <th>Hora de Finalizacion</th>
                     <th>Tipo</th>
                     <th>Status</th>
                     <th>Seleccionar</th>
                 </tr>
             </thead>
             <tbody>
-            <?php
-            $sql = "SELECT c.Id_Cita, f.Dia AS Fecha, c.Hora, tc.Tipo AS Tipo, c.Status
-                    FROM cita c
-                    INNER JOIN fecha f ON c.Id_Fecha = f.Id_Fecha
-                    INNER JOIN tipo_cita tc ON c.Id_TipoCita = tc.Id_TipoCita
-                    WHERE c.ID_Psicologa = '1'";
-            $result = mysqli_query($conn, $sql);
-    
-            $contador = 1;
-    
-            while ($mostrar = mysqli_fetch_array($result)) {
-                ?>
-                <tr>
-                    <td><?php echo $contador++; ?></td>
-                    <td><?php echo $mostrar['Fecha']?></td>
-                    <td><?php echo $mostrar['Hora'] ?></td>
-                    <td><?php echo $mostrar['Tipo']?></td>
-                    <td><?php echo $mostrar['Status'] ?></td>
-                    <td><input type="radio" name="cita" class="cita-radio" data-id="<?php echo $mostrar['Id_Cita']; ?>"></td>
-                </tr>
                 <?php
-            }
-            ?>
+                $sql = "SELECT c.Id_Cita, f.Dia AS Fecha, c.Hora, c.Hora_Fin, tc.Tipo AS Tipo, c.Status
+                        FROM cita c
+                        INNER JOIN fecha f ON c.Id_Fecha = f.Id_Fecha
+                        INNER JOIN tipo_cita tc ON c.Id_TipoCita = tc.Id_TipoCita
+                        WHERE c.ID_Psicologa = '1'";
+                $result = mysqli_query($conn, $sql);
+
+                $contador = 1;
+                $contadorr = 1;
+                $citasPendientes = '';
+                $citasRealizadas = '';
+
+                while ($mostrar = mysqli_fetch_array($result)) {
+                    if ($mostrar['Status'] === 'Realizada' || $mostrar['Status'] === 'Suspendida') {
+                        $citasPendientes .= '<tr>
+                                          <td>' . $contador++ . '</td>
+                                          <td>' . $mostrar['Fecha'] . '</td>
+                                          <td>' . $mostrar['Hora'] . '</td>
+                                          <td>' . $mostrar['Hora_Fin'] . '</td>
+                                          <td>' . $mostrar['Tipo'] . '</td>
+                                          <td>' . $mostrar['Status'] . '</td>
+                                          
+                                        </tr>';
+                    } else {
+                        $citasRealizadas .= '<tr>
+                                          <td>' . $contadorr++ . '</td>
+                                          <td>' . $mostrar['Fecha'] . '</td>
+                                          <td>' . $mostrar['Hora'] . '</td>
+                                          <td>' . $mostrar['Hora_Fin'] . '</td>
+                                          <td>' . $mostrar['Tipo'] . '</td>
+                                          <td>' . $mostrar['Status'] . '</td>
+                                          <td><input type="radio" name="cita" class="cita-radio" data-id="' . $mostrar['Id_Cita'] . '"></td>
+                                        </tr>';
+                    }
+                }
+
+                echo $citasRealizadas;
+                ?>
             </tbody>
         </table>
     </div>
@@ -813,6 +851,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div>
             <button id="modificar-btn">Modificar</button>
         </div>
+        <h3>Citas Realizadas</h3>
+        <table>
+    <thead>
+      <tr>
+        <th>Núm.Citas</th>
+        <th>Fecha</th>
+        <th>Hora de Inicio</th>
+        <th>Hora de Finalizacion</th>
+        <th>Tipo</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php
+      echo $citasPendientes;
+      
+      ?>
+    </tbody>
+  </table>
     </div>
 </div>
 
@@ -1102,10 +1159,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label><input type="checkbox" name="obediente" value="Obediente"> Obediente</label>
                 <label><input type="checkbox" name="ordenado" value="Ordenado"> Ordenado</label>
                 <label><input type="checkbox" name="desordenado" value="Desordenado"> Desordenado</label>
-                <label>Tendencias Destructivas:</label>
-                <textarea name="tendencias_destructivas"></textarea>
+                
             </div>
-
+            <label>Tendencias Destructivas:</label>
+                <textarea name="tendencias_destructivas"></textarea>
             
         </div>
 
@@ -1324,29 +1381,95 @@ document.getElementById('modificar-btn').addEventListener('click', function() {
   });
 
   function showMunicipios() {
-    var estadoSelect = document.getElementById("state");
-    var municipioSelect = document.getElementById("city");
-    
-    
-    municipioSelect.disabled = estadoSelect.value === "";
-}
-function showMunicipiosPartner() {
-    var estadoSelect = document.getElementById("state_partner");
-    var municipioSelect = document.getElementById("city_partner");
-    municipioSelect.disabled = estadoSelect.value === "";
-}
+            var estadoSelect = document.getElementById('state');
+            var municipioSelect = document.getElementById('city');
+            var estado_id = estadoSelect.value;
 
-function showMunicipiosP() {
-    var estadoSelect = document.getElementById("state_p");
-    var municipioSelect = document.getElementById("city_p");
-    municipioSelect.disabled = estadoSelect.value === "";
-}
+            if (estado_id === '') {
+                municipioSelect.innerHTML = "<option value=''>Seleccione un estado primero</option>";
+                municipioSelect.disabled = true;
+                return;
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    municipioSelect.innerHTML = xhr.responseText;
+                    municipioSelect.disabled = false;
+                }
+            };
+            xhr.send('id_estado=' + estado_id);
+        }
+        function showMunicipiosPartner() {
+            var estadoSelect = document.getElementById('state_partner');
+            var municipioSelect = document.getElementById('city_partner');
+            var estado_id = estadoSelect.value;
+
+            if (estado_id === '') {
+                municipioSelect.innerHTML = "<option value=''>Seleccione un estado primero</option>";
+                municipioSelect.disabled = true;
+                return;
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    municipioSelect.innerHTML = xhr.responseText;
+                    municipioSelect.disabled = false;
+                }
+            };
+            xhr.send('id_estado=' + estado_id);
+        }
+
+        function showMunicipiosP() {
+            var estadoSelect = document.getElementById('state_p');
+            var municipioSelect = document.getElementById('city_p');
+            var estado_id = estadoSelect.value;
+
+            if (estado_id === '') {
+                municipioSelect.innerHTML = "<option value=''>Seleccione un estado primero</option>";
+                municipioSelect.disabled = true;
+                return;
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    municipioSelect.innerHTML = xhr.responseText;
+                    municipioSelect.disabled = false;
+                }
+            };
+            xhr.send('id_estado=' + estado_id);
+        }
 
 function showMunicipiosI() {
-    var estadoSelect = document.getElementById("state_i");
-    var municipioSelect = document.getElementById("city_i");
-    municipioSelect.disabled = estadoSelect.value === "";
-}
+            var estadoSelect = document.getElementById('state_i');
+            var municipioSelect = document.getElementById('city_i');
+            var estado_id = estadoSelect.value;
+
+            if (estado_id === '') {
+                municipioSelect.innerHTML = "<option value=''>Seleccione un estado primero</option>";
+                municipioSelect.disabled = true;
+                return;
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    municipioSelect.innerHTML = xhr.responseText;
+                    municipioSelect.disabled = false;
+                }
+            };
+            xhr.send('id_estado=' + estado_id);
+        }
 function esHoraValida(hora) {
             const [hours, minutes] = hora.split(':').map(Number);
             // Validar si está en el intervalo permitido
