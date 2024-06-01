@@ -691,7 +691,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <tr>
           <th>Núm.Citas</th>
           <th>Fecha</th>
-          <th>Hora</th>
+          <th>Hora de Inicio</th>
+          <th>Hora de Finalizacion</th>
           <th>Tipo</th>
           <th>Status</th>
           <th>Seleccionar</th>
@@ -703,7 +704,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $user_id = $_SESSION['user_id'];  
         }
 
-        $sql = "SELECT c.Id_Cita, f.Id_Fecha, f.Dia AS Fecha, c.Hora, tc.Tipo AS Tipo, c.Status
+        $sql = "SELECT c.Id_Cita, f.Id_Fecha, f.Dia AS Fecha, c.Hora, c.Hora_Fin, tc.Tipo AS Tipo, c.Status
                 FROM cita c
                 INNER JOIN fecha f ON c.Id_Fecha = f.Id_Fecha
                 INNER JOIN tipo_cita tc ON c.Id_TipoCita = tc.Id_TipoCita
@@ -721,6 +722,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                       <td>' . $contador++ . '</td>
                                       <td>' . $mostrar['Fecha'] . '</td>
                                       <td>' . $mostrar['Hora'] . '</td>
+                                      <td>' . $mostrar['Hora_Fin'] . '</td>
                                       <td>' . $mostrar['Tipo'] . '</td>
                                       <td>' . $mostrar['Status'] . '</td>
                                     </tr>';
@@ -729,6 +731,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                       <td>' . $contadorr++ . '</td>
                                       <td>' . $mostrar['Fecha'] . '</td>
                                       <td>' . $mostrar['Hora'] . '</td>
+                                      <td>' . $mostrar['Hora_Fin'] . '</td>
                                       <td>' . $mostrar['Tipo'] . '</td>
                                       <td>' . $mostrar['Status'] . '</td>
                                       <td><input type="radio" name="cita_seleccionada" value="' . $mostrar['Id_Cita'] . '" data-id-fecha="' . $mostrar['Id_Fecha'] . '"></td>
@@ -756,7 +759,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <tr>
         <th>Núm.Citas</th>
         <th>Fecha</th>
-        <th>Hora</th>
+        <th>Hora de Inicio</th>
+        <th>Hora de Finalizacion</th>
         <th>Tipo</th>
         <th>Status</th>
       </tr>
