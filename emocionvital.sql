@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 29-05-2024 a las 23:55:48
+-- Tiempo de generación: 01-06-2024 a las 20:49:23
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `emocionvital`
+-- Base de datos: `emocionvital1`
 --
 
 -- --------------------------------------------------------
@@ -356,8 +356,7 @@ CREATE TABLE `factores_que_motivan` (
 --
 
 INSERT INTO `factores_que_motivan` (`ID_Factores`, `FactoresQueMotivan`, `Referido_Por`, `Diagnostico_Organico`, `ActitudDeLosPadres`, `EstadoEmocionalNiño`) VALUES
-(1, 'asdad', 'adsdasd', 'asdsa', 'asdsadassd', 'sadsads'),
-(2, 'dasdasd', 'assa', 'as', 'aasa', 'saasa');
+(1, 'sffsf', 'sfdf', 'dsfd', 'sfdf', 'dsdsd');
 
 -- --------------------------------------------------------
 
@@ -419,7 +418,9 @@ CREATE TABLE `historial_medico` (
   `ID_Hereditario` int(11) NOT NULL,
   `ID_Impresion` int(11) NOT NULL,
   `ID_Pronostico` int(11) NOT NULL,
+  `Nombre` varchar(80) NOT NULL,
   `Cedula` int(11) NOT NULL,
+  `Fecha_Nacimiento` date NOT NULL,
   `Telefono` varchar(12) NOT NULL,
   `Direccion` varchar(250) NOT NULL,
   `Escolaridad` varchar(50) NOT NULL,
@@ -432,8 +433,8 @@ CREATE TABLE `historial_medico` (
 -- Volcado de datos para la tabla `historial_medico`
 --
 
-INSERT INTO `historial_medico` (`ID_Historial`, `ID_Psicologo`, `ID_Factores`, `ID_Fisico`, `ID_Familiares`, `ID_Personalidad_Conducta`, `ID_Hereditario`, `ID_Impresion`, `ID_Pronostico`, `Cedula`, `Telefono`, `Direccion`, `Escolaridad`, `Promedio`, `Escuela`, `LugaQueOcupaFamilia`) VALUES
-(1, 1, 1, 1, 1, 1, 1, 1, 1, 0, '', '', 'jbj', 18.7, 'kjnkjnj', ' kjini');
+INSERT INTO `historial_medico` (`ID_Historial`, `ID_Psicologo`, `ID_Factores`, `ID_Fisico`, `ID_Familiares`, `ID_Personalidad_Conducta`, `ID_Hereditario`, `ID_Impresion`, `ID_Pronostico`, `Nombre`, `Cedula`, `Fecha_Nacimiento`, `Telefono`, `Direccion`, `Escolaridad`, `Promedio`, `Escuela`, `LugaQueOcupaFamilia`) VALUES
+(1, 1, 1, 1, 1, 1, 1, 1, 1, 'adad', 28372278, '2001-05-19', '04260649763', 'eweewd', 'sdfds', 18.7, 'sdfdf', 'sfsdf');
 
 -- --------------------------------------------------------
 
@@ -1179,7 +1180,7 @@ ALTER TABLE `factores_personalidad_conducta`
 -- AUTO_INCREMENT de la tabla `factores_que_motivan`
 --
 ALTER TABLE `factores_que_motivan`
-  MODIFY `ID_Factores` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ID_Factores` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `factura`
