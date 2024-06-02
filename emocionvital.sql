@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 01-06-2024 a las 20:49:23
+-- Tiempo de generación: 02-06-2024 a las 01:16:32
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -212,13 +212,13 @@ CREATE TABLE `factoresfamiliares` (
   `Perdida_Algun_Familiar` varchar(20) NOT NULL,
   `Quien_Era` varchar(20) NOT NULL,
   `Como_fue` varchar(250) NOT NULL,
-  `Edad_Que_Tenia_Infante` varchar(20) NOT NULL,
+  `Edad_Que_Tenia_Infante` int(2) NOT NULL,
   `Presencio_Suceso` varchar(20) NOT NULL,
   `Reaccion_Del_Infante` varchar(250) NOT NULL,
   `Accidentes_Infante` varchar(250) NOT NULL,
   `Castigos_Graves` varchar(250) NOT NULL,
   `De_Parte_Quien` varchar(50) NOT NULL,
-  `Edad_Infante` int(11) NOT NULL,
+  `Edad_Infante` int(2) NOT NULL,
   `Problemas_Infante` varchar(250) NOT NULL,
   `Problemas_Fisicos` varchar(250) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -228,7 +228,7 @@ CREATE TABLE `factoresfamiliares` (
 --
 
 INSERT INTO `factoresfamiliares` (`ID_Familiares`, `Nombre_Madre`, `Apellido_Madre`, `Nombre_Padre`, `Apellido_Padre`, `Salus_Fisica_Madre`, `Salus_Fisica_Padre`, `Nivel_Educativo_Madre`, `Nivel_Educativo_Padre`, `Trabajo_Actual_Madre`, `Trabajo_Actual_Padre`, `Horario_Trabajo_Madre`, `Horario_Trabajo_Padre`, `Habitos_De_la_Madre`, `Habitos_De_la_Padre`, `Perdida_Algun_Familiar`, `Quien_Era`, `Como_fue`, `Edad_Que_Tenia_Infante`, `Presencio_Suceso`, `Reaccion_Del_Infante`, `Accidentes_Infante`, `Castigos_Graves`, `De_Parte_Quien`, `Edad_Infante`, `Problemas_Infante`, `Problemas_Fisicos`) VALUES
-(1, 'cmñcm', 'sslakdaslk', 'sdlksadks', 'askadm', 'aDSDSAK', 'KDSKLADMK', 'skmflkds', 'mldksmcsdl', 'askmlksa', 'amslkal', 'klmlk', 'kbkjnkj', 'nkhjhhj', 'jhhjj', 'kkslfds', 'dsdas', 'adsd', 'aSAs', 'asdsd', 'sdsads', 'sadsdsa', 'asdsdsa', 'sadsdsa', 9, 'sad', 'sadsa');
+(1, 'cmñcm', 'sslakdaslk', 'sdlksadks', 'askadm', 'aDSDSAK', 'KDSKLADMK', 'skmflkds', 'mldksmcsdl', 'askmlksa', 'amslkal', 'klmlk', 'kbkjnkj', 'nkhjhhj', 'jhhjj', 'kkslfds', 'dsdas', 'adsd', 0, 'asdsd', 'sdsads', 'sadsdsa', 'asdsdsa', 'sadsdsa', 9, 'sad', 'sadsa');
 
 -- --------------------------------------------------------
 
