@@ -164,36 +164,56 @@ function getPrecioCitaInfante($conn) {
 }
 
 function registerUser($conn, $email, $username, $password, $password_repeat) {
-    if ($password != $password_repeat) {
-        echo '<script>
-                alert("Las contraseñas no coinciden");
-                window.history.back(); // Volver a la página anterior
-              </script>';
-        exit();
+    // Validar contraseña
+    if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\W]).{8,}$/', $password)) {
+        return "La contraseña debe tener: Al menos 8 caracteres, Al menos una letra minúscula, Al menos una letra mayúscula, Al menos un número, Al menos un símbolo especial";
     }
 
-    $password_md5 = md5($password);
+    // Verificar que las contraseñas coincidan
+    if ($password != $password_repeat) {
+        return "Las contraseñas no coinciden";
+    }
 
-    $check_user_sql = "SELECT * FROM login WHERE Usuario='$username'";
-    $result = $conn->query($check_user_sql);
+    // Verificar si el correo ya está en uso
+    $check_email_sql = "SELECT * FROM login WHERE Correo = ?";
+    $stmt_email_check = $conn->prepare($check_email_sql);
+    $stmt_email_check->bind_param("s", $email);
+    $stmt_email_check->execute();
+    $result_email_check = $stmt_email_check->get_result();
 
-    if ($result->num_rows == 0) {
-        $sql = "INSERT INTO login (Usuario, Password, Correo) VALUES ('$username', '$password_md5', '$email')";
+    if ($result_email_check === false) {
+        return "Error al verificar el correo: " . $conn->error;
+    }
 
-        if ($conn->query($sql) === TRUE) {
-            echo '<script>
-        alert("Registro existoso");
-        window.history.back(); // Volver a la página anterior
-      </script>';
-        } else {
-            return "Error: " . $sql . "<br>" . $conn->error;
+    if ($result_email_check->num_rows > 0) {
+        return "El correo electrónico ya está en uso.";
+    }
+
+    // Verificar si el nombre de usuario ya está en uso
+    $check_user_sql = "SELECT * FROM login WHERE Usuario = ?";
+    $stmt_user_check = $conn->prepare($check_user_sql);
+    $stmt_user_check->bind_param("s", $username);
+    $stmt_user_check->execute();
+    $result_user_check = $stmt_user_check->get_result();
+
+    if ($result_user_check === false) {
+        return "Error al verificar el nombre de usuario: " . $conn->error;
+    }
+
+    if ($result_user_check->num_rows == 0) {
+        // Insertar nuevo usuario si el nombre de usuario no está en uso
+        $password_md5 = md5($password);
+        $insert_sql = "INSERT INTO login (Usuario, Password, Correo) VALUES (?, ?, ?)";
+        $stmt_insert = $conn->prepare($insert_sql);
+        $stmt_insert->bind_param("sss", $username, $password_md5, $email);
+
+        if ($stmt_insert->execute() === false) {
+            return "Error al insertar el registro: " . $stmt_insert->error;
         }
+
+        return "Registro exitoso";
     } else {
-        echo '<script>
-        alert("Nombre de usuario en uso");
-        window.history.back(); // Volver a la página anterior
-      </script>';
-        exit();
+        return "Nombre de usuario en uso";
     }
 }
 
@@ -223,7 +243,6 @@ function loginUser($conn, $user, $password) {
     }
 }
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['logout'])) {
     logout();
 }
@@ -238,11 +257,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $password_repeat = $_POST['password_repeat'];
 
         $error_message = registerUser($conn, $email, $username, $password, $password_repeat);
+
+        if ($error_message === "Registro exitoso") {
+            echo '<script>alert("Registro exitoso"); window.location.href = "index.php";</script>';
+        } else {
+            echo '<script>alert("' . $error_message . '"); window.history.back();</script>';
+        }
     } elseif (isset($_POST['login'])) {
         $user = $_POST['user'];
         $password = $_POST['password'];
 
         $error_message = loginUser($conn, $user, $password);
+
+        if ($error_message !== "") {
+            echo '<script>alert("' . $error_message . '"); window.history.back();</script>';
+        }
     }
 }
 
@@ -322,8 +351,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <input type="submit" name="login" value="Ingresar">
     </form>
     <a id="reset-pass-link" class="reset-container">
-      <label class="reset-pass-label" for="reset_pass">Recuperar Contraseña</label>
-    </a>
+        <label class="reset-pass-label" for="reset_pass">Recuperar Contraseña</label>
+      </a>
   </div>
 </div>
 
@@ -347,6 +376,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </form>
   </div>
 </div>
+
+<div id="reset-pass-form" class="container hide">
+    <div class="form">
+      <h2>Recuperar contraseña</h2>
+      <form method="post">
+        <label for="email">Correo electrónico</label>
+        <input type="email" id="email" name="email" required>
+
+        <input type="submit" value="Recuperar contraseña">
+      </form>
+    </div>
+  </div>
 
 <div id="individual-form" class="container hide">
     <form method="POST" action="insertar_datos.php">
@@ -876,9 +917,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <div id="historial-form" class="container hide">
 <body>
-    <h1>HISTORIA CLÍNICA PSICOLÓGICA</h1>
-    <form method="POST" action="insertarDatoshm.php">
-   
+<h1>HISTORIA CLÍNICA PSICOLÓGICA</h1>
+    <!-- Botones para insertar y buscar/ver -->
+    <div class="section">
+        <button onclick="mostrarInsertar()">Insertar</button>
+        <button onclick="mostrarBuscar()">Buscar/Ver Historial</button>
+    </div>
+
+    <!-- Sección de búsqueda -->
+    <div id="seccion-busqueda" style="display: none;">
+        <h2>Búsqueda por Cédula</h2>
+        <input type="text" id="cedula-busqueda" name="cedula" placeholder="Ingrese la cédula">
+        <button onclick="buscarHistorial()">Buscar</button>
+    </div>
+
+    <!-- Resultado de la búsqueda -->
+    <div id="resultado-busqueda"></div>
+
+    <form method="POST" action="insertarDatoshm.php" id="historial-formulario">
         <div class="section">
             <h2>I. DATOS DE IDENTIFICACIÓN</h2>
             <div class="input-group">
@@ -1041,7 +1097,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <div class="textarea-group">
                 <label>2. EXPERIENCIAS TRAUMÁTICAS DEL NIÑO:</label>
-                <textarea name="experiencias_traumaticas"></textarea>
             </div>
             <div class="input-group">
                 <label>Pérdida de algún familiar o ser querido:</label>
@@ -1365,11 +1420,11 @@ document.getElementById('modificar-btn').addEventListener('click', function() {
     registerForm.classList.remove('hide');
   });
   resetPassLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    resetPassForm.classList.remove('hide');
-    loginForm.classList.add('hide');
-    registerForm.classList.add('hide');
-  });
+      e.preventDefault();
+      resetPassForm.classList.remove('hide');
+      loginForm.classList.add('hide');
+      registerForm.classList.add('hide');
+    });
   homeLink.addEventListener('click', (e) => {
     e.preventDefault();
     loginForm.classList.add('hide');
@@ -1557,6 +1612,50 @@ function esHoraValida(hora) {
                 document.getElementById('hora_fin_I').value = '';
             }
         }
+
+         function mostrarInsertar() {
+            // Mostrar el formulario de inserción
+            document.getElementById('historial-formulario').setAttribute('action', 'insertarDatoshm.php');
+            document.getElementById('historial-formulario').style.display = 'block';
+            document.getElementById('seccion-busqueda').style.display = 'none';
+            document.getElementById('resultado-busqueda').innerHTML = ''; // Limpiar resultados anteriores
+        }
+
+        function mostrarBuscar() {
+            // Mostrar la sección de búsqueda
+            document.getElementById('historial-formulario').style.display = 'none';
+            document.getElementById('seccion-busqueda').style.display = 'block';
+            document.getElementById('resultado-busqueda').innerHTML = ''; // Limpiar resultados anteriores
+        }
+
+        function buscarHistorial() {
+            var cedula = document.getElementById('cedula-busqueda').value;
+
+            // Verificar que se haya ingresado una cédula
+            if (!cedula) {
+                alert('Ingrese una cédula para realizar la búsqueda.');
+                return;
+            }
+
+            // Realizar una solicitud AJAX para buscar el historial médico por cédula
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // Si la solicitud se completó correctamente, mostrar el resultado de la búsqueda
+                        document.getElementById('resultado-busqueda').innerHTML = xhr.responseText;
+                    } else {
+                        // Si ocurrió un error, mostrar un mensaje de error
+                        alert('Error al realizar la búsqueda. Inténtelo de nuevo.');
+                    }
+                }
+            };
+
+            // Configurar la solicitud AJAX
+            xhr.open('GET', 'buscarHistorial.php?cedula=' + cedula, true);
+            xhr.send();
+        }
+
 </script>
 
 </body>
