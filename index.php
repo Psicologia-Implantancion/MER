@@ -316,6 +316,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <?php if ($_SESSION['user_type'] === 'Psicologo'): ?>
                     <li><a href="#" onclick="showhistorial('historial-form')">Historial Medico</a></li>
                     <li><a href="#" onclick="showlista('Lista-de-citas')">Lista de citas</a></li>
+                    <li><a href="#" onclick="showconf('configuracion')">Configuracion</a></li>
                 <?php endif; ?>
             <li>
                 <form id="logout-form" method="post">
@@ -1296,7 +1297,64 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </body>
 </div>
 
+<div id="configuracion" class="container hide">
+<body>
+    <?php
+$sql = "SELECT Dia FROM fecha WHERE Status = 1";
+$result = $conn->query($sql);
 
+$dias_no_disponibles = [];
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        $dias_no_disponibles[] = $row['Dia'];
+    }
+} ?>
+
+    <h1>Modificar Fecha</h1>
+    
+    <!-- Formulario para agregar/modificar fecha -->
+    <form action="modificar_fecha.php" method="post">
+        <label for="fecha">Fecha:</label>
+        <input type="date" id="fecha" name="dia" required>
+        <button type="submit">Modificar Fecha</button>
+    </form>
+    
+    <h2>Días No Disponibles</h2>
+    <ul>
+        <?php foreach ($dias_no_disponibles as $fecha): ?>
+            <li><?php echo $fecha; ?></li>
+        <?php endforeach; ?>
+    </ul>
+    </form>
+
+    <div id="modificar-precios">
+
+        <h1>Modificar Precios</h1>
+        
+        <form action="modificar_precios.php" method="post">
+            <?php
+            // Consulta para obtener los tipos de cita y sus precios
+            $sql = "SELECT * FROM tipo_cita";
+            $result = $conn->query($sql);
+
+            if ($result->num_rows > 0) {
+                while($row = $result->fetch_assoc()) {
+                    $id_tipo_cita = $row['Id_TipoCita'];
+                    $tipo_cita = $row['Tipo'];
+                    $precio = $row['Precio'];
+            ?>
+            <label for="precio_<?php echo $id_tipo_cita; ?>"><?php echo $tipo_cita; ?>:</label>
+            <input type="number" id="precio_<?php echo $id_tipo_cita; ?>" name="precio_<?php echo $id_tipo_cita; ?>" value="<?php echo $precio; ?>" required>
+            <?php
+                }
+            }
+            ?>
+            <button type="submit">Guardar Cambios</button>
+        </form>
+    </div>
+
+</body>
+</div>
 
 <script>
 
@@ -1397,6 +1455,14 @@ document.getElementById('modificar-btn').addEventListener('click', function() {
         forms[i].classList.add('hide');
     }
     document.getElementById('Lista-de-citas').classList.remove('hide');
+  }
+
+  function showconf() {
+    var forms = document.querySelectorAll('.container');
+    for (var i = 0; i < forms.length; i++) {
+        forms[i].classList.add('hide');
+    }
+    document.getElementById('configuracion').classList.remove('hide');
   }
 
   const loginLink = document.getElementById('login-link');
