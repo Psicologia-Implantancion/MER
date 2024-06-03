@@ -184,6 +184,37 @@ exit();
 
 
                 $sql_fecha = "INSERT INTO fecha (Dia) VALUES ('$partnerDate')";
+                // Comprobar si la fecha ya está registrada
+$sql = "SELECT COUNT(*) AS count FROM fecha WHERE Dia = ? AND Status = 1";
+$stmt = $conn->prepare($sql);
+
+// Verificar si la preparación de la consulta fue exitosa
+if ($stmt === false) {
+    die("Error en la preparación de la consulta: " . $conn->error);
+}
+
+// Vincular el parámetro
+$stmt->bind_param("s", $partnerDate);
+
+// Ejecutar la declaración
+$stmt->execute();
+
+// Obtener el resultado
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+
+if ($row['count'] > 0) {
+    // Si la fecha ya está registrada
+    echo '
+    <script>
+        alert("La fecha ya se encuentra registrada y no está disponible.");
+        window.history.back(); 
+    </script>
+    '; 
+    exit(); 
+}
+
+
                 if ($conn->query($sql_fecha) === TRUE) {
                     $fecha_id = $conn->insert_id;
 
