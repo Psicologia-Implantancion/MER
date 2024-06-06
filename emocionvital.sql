@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 02-06-2024 a las 01:16:32
+-- Tiempo de generación: 03-06-2024 a las 20:33:22
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -20,30 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `emocionvital1`
 --
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `administrador`
---
-
-CREATE TABLE `administrador` (
-  `ID_Admi` int(11) NOT NULL,
-  `Primer Nombre` varchar(80) NOT NULL,
-  `Segundo Nombre` varchar(80) NOT NULL,
-  `Primer Apellido` varchar(80) NOT NULL,
-  `Segundo Apellido` varchar(80) NOT NULL,
-  `Cedula` int(11) NOT NULL,
-  `Teléfono` varchar(11) NOT NULL,
-  `Correo` varchar(80) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `administrador`
---
-
-INSERT INTO `administrador` (`ID_Admi`, `Primer Nombre`, `Segundo Nombre`, `Primer Apellido`, `Segundo Apellido`, `Cedula`, `Teléfono`, `Correo`) VALUES
-(1, 'acsd', 'adasd', 'asdasd', 'adsd', 28372278, '04260649763', 'leximar@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -361,31 +337,6 @@ INSERT INTO `factores_que_motivan` (`ID_Factores`, `FactoresQueMotivan`, `Referi
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `factura`
---
-
-CREATE TABLE `factura` (
-  `ID_Factura` int(11) NOT NULL,
-  `ID_Membrete` int(11) NOT NULL,
-  `ID_Paciente` int(11) NOT NULL,
-  `ID_Psicologo` int(11) NOT NULL,
-  `Id_Fecha` int(11) NOT NULL,
-  `Monto` float NOT NULL,
-  `IVA` float NOT NULL,
-  `Total` float NOT NULL,
-  `Asunto` varchar(80) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `factura`
---
-
-INSERT INTO `factura` (`ID_Factura`, `ID_Membrete`, `ID_Paciente`, `ID_Psicologo`, `Id_Fecha`, `Monto`, `IVA`, `Total`, `Asunto`) VALUES
-(1, 1, 1, 1, 1, 15, 16, 21, 'mjnkjnk');
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `fecha`
 --
 
@@ -435,28 +386,6 @@ CREATE TABLE `historial_medico` (
 
 INSERT INTO `historial_medico` (`ID_Historial`, `ID_Psicologo`, `ID_Factores`, `ID_Fisico`, `ID_Familiares`, `ID_Personalidad_Conducta`, `ID_Hereditario`, `ID_Impresion`, `ID_Pronostico`, `Nombre`, `Cedula`, `Fecha_Nacimiento`, `Telefono`, `Direccion`, `Escolaridad`, `Promedio`, `Escuela`, `LugaQueOcupaFamilia`) VALUES
 (1, 1, 1, 1, 1, 1, 1, 1, 1, 'adad', 28372278, '2001-05-19', '04260649763', 'eweewd', 'sdfds', 18.7, 'sdfdf', 'sfsdf');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `historico`
---
-
-CREATE TABLE `historico` (
-  `ID_Historico` int(11) NOT NULL,
-  `ID_Paciente` int(11) NOT NULL,
-  `ID_Psicologa` int(11) NOT NULL,
-  `ID_Admin` int(11) NOT NULL,
-  `ID_Factura` int(11) NOT NULL,
-  `ID_Historial` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `historico`
---
-
-INSERT INTO `historico` (`ID_Historico`, `ID_Paciente`, `ID_Psicologa`, `ID_Admin`, `ID_Factura`, `ID_Historial`) VALUES
-(1, 1, 1, 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -951,12 +880,6 @@ INSERT INTO `tipo_cita` (`Id_TipoCita`, `Tipo`, `Precio`) VALUES
 --
 
 --
--- Indices de la tabla `administrador`
---
-ALTER TABLE `administrador`
-  ADD PRIMARY KEY (`ID_Admi`);
-
---
 -- Indices de la tabla `cita`
 --
 ALTER TABLE `cita`
@@ -1027,17 +950,6 @@ ALTER TABLE `factores_que_motivan`
   ADD PRIMARY KEY (`ID_Factores`);
 
 --
--- Indices de la tabla `factura`
---
-ALTER TABLE `factura`
-  ADD PRIMARY KEY (`ID_Factura`),
-  ADD KEY `ID_Paciente` (`ID_Paciente`),
-  ADD KEY `ID_Psicologo` (`ID_Psicologo`),
-  ADD KEY `ID_Membrete` (`ID_Membrete`),
-  ADD KEY `Id_Fecha` (`Id_Fecha`),
-  ADD KEY `Id_Fecha_2` (`Id_Fecha`);
-
---
 -- Indices de la tabla `fecha`
 --
 ALTER TABLE `fecha`
@@ -1056,17 +968,6 @@ ALTER TABLE `historial_medico`
   ADD KEY `ID_Hereditario` (`ID_Hereditario`),
   ADD KEY `ID_Impresion` (`ID_Impresion`),
   ADD KEY `ID_Pronostico` (`ID_Pronostico`);
-
---
--- Indices de la tabla `historico`
---
-ALTER TABLE `historico`
-  ADD PRIMARY KEY (`ID_Historico`),
-  ADD KEY `ID_Paciente` (`ID_Paciente`),
-  ADD KEY `ID_Psicologa` (`ID_Psicologa`),
-  ADD KEY `ID_Admin` (`ID_Admin`),
-  ADD KEY `ID_Factura` (`ID_Factura`),
-  ADD KEY `ID_Historial` (`ID_Historial`);
 
 --
 -- Indices de la tabla `impresion_psicologa`
@@ -1115,12 +1016,6 @@ ALTER TABLE `tipo_cita`
 --
 -- AUTO_INCREMENT de las tablas volcadas
 --
-
---
--- AUTO_INCREMENT de la tabla `administrador`
---
-ALTER TABLE `administrador`
-  MODIFY `ID_Admi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `cita`
@@ -1183,12 +1078,6 @@ ALTER TABLE `factores_que_motivan`
   MODIFY `ID_Factores` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT de la tabla `factura`
---
-ALTER TABLE `factura`
-  MODIFY `ID_Factura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
 -- AUTO_INCREMENT de la tabla `fecha`
 --
 ALTER TABLE `fecha`
@@ -1199,12 +1088,6 @@ ALTER TABLE `fecha`
 --
 ALTER TABLE `historial_medico`
   MODIFY `ID_Historial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT de la tabla `historico`
---
-ALTER TABLE `historico`
-  MODIFY `ID_Historico` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `impresion_psicologa`
@@ -1278,14 +1161,6 @@ ALTER TABLE `direccion`
   ADD CONSTRAINT `direccion_ibfk_3` FOREIGN KEY (`ID_Municipio`) REFERENCES `municipios` (`id_municipio`) ON UPDATE CASCADE;
 
 --
--- Filtros para la tabla `factura`
---
-ALTER TABLE `factura`
-  ADD CONSTRAINT `factura_ibfk_1` FOREIGN KEY (`ID_Paciente`) REFERENCES `paciente` (`ID_Paciente`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `factura_ibfk_2` FOREIGN KEY (`ID_Psicologo`) REFERENCES `psicologa` (`ID_Psicologa`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `factura_ibfk_3` FOREIGN KEY (`Id_Fecha`) REFERENCES `fecha` (`Id_Fecha`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
 -- Filtros para la tabla `historial_medico`
 --
 ALTER TABLE `historial_medico`
@@ -1297,16 +1172,6 @@ ALTER TABLE `historial_medico`
   ADD CONSTRAINT `historial_medico_ibfk_7` FOREIGN KEY (`ID_Personalidad_Conducta`) REFERENCES `factores_personalidad_conducta` (`ID_Personalidad_Conducta`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `historial_medico_ibfk_8` FOREIGN KEY (`ID_Fisico`) REFERENCES `factoresfisicos` (`ID_Fisico`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `historial_medico_ibfk_9` FOREIGN KEY (`ID_Familiares`) REFERENCES `factoresfamiliares` (`ID_Familiares`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `historico`
---
-ALTER TABLE `historico`
-  ADD CONSTRAINT `historico_ibfk_1` FOREIGN KEY (`ID_Paciente`) REFERENCES `paciente` (`ID_Paciente`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `historico_ibfk_2` FOREIGN KEY (`ID_Admin`) REFERENCES `administrador` (`ID_Admi`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `historico_ibfk_3` FOREIGN KEY (`ID_Psicologa`) REFERENCES `psicologa` (`ID_Psicologa`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `historico_ibfk_4` FOREIGN KEY (`ID_Factura`) REFERENCES `factura` (`ID_Factura`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `historico_ibfk_5` FOREIGN KEY (`ID_Historial`) REFERENCES `historial_medico` (`ID_Historial`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `municipios`
