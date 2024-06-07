@@ -287,6 +287,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DB Krato</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="style.css">
   <style>
     .hide {
@@ -390,112 +391,148 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
   </div>
 
-<div id="individual-form" class="container hide">
-    <form method="POST" action="insertar_datos.php">
-        <div class="section-title">Datos Del Paciente</div>
-        <div class="line-fields">
-            <div class="input-field half-width">
-                <label for="firstName">Primer Nombre *</label>
-                <input type="text" id="firstName" name="primer_nombre" required>
+  <div id="individual-form" class="container hide" >
+    <form class="row g-3 needs-validation" novalidate method="POST" action="insertar_datos.php">
+        <div class="mb-3">
+            <h3 class="section-title">Datos Del Paciente</h3>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6 form-floating mb-3">
+                <input type="text" class="form-control" id="firstName" name="primer_nombre" placeholder="Primer Nombre" required pattern="[A-Za-z]+" title="Solo se permiten letras en el primer nombre">
+                <label for="firstName" class="text-dark">Primer Nombre *</label>
+                <div class="valid-feedback">Todo bien</div>
+                    <div class="invalid-feedback">Por favor, ingrese solo letras en el primer nombre</div>
             </div>
-            <div class="input-field half-width">
-                <label for="secondName">Segundo Nombre *</label>
-                <input type="text" id="secondName" name="segundo_nombre">
+            <div class="col-md-6 form-floating mb-3">
+                <input type="text" class="form-control" id="secondName" name="segundo_nombre" placeholder="Segundo Nombre" required pattern="[A-Za-z]+" title="Solo se permiten letras en el segundo nombre">
+                <label for="secondName" class="text-dark">Segundo Nombre *</label>
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Por favor, ingrese solo letras en el segundo nombre</div>
             </div>
         </div>
-        <div class="line-fields">
-            <div class="input-field half-width">
-                <label for="firstLastName">Primer Apellido *</label>
-                <input type="text" id="firstLastName" name="primer_apellido" required>
+        <div class="row mb-3">
+            <div class="col-md-6 form-floating mb-3">
+                <input type="text" class="form-control" id="firstLastName" name="primer_apellido" placeholder="Primer Apellido" required pattern="[A-Za-z]+" title="Solo se permiten letras en el primer apellido">
+                <label for="firstLastName" class="text-dark">Primer Apellido *</label>
+                <div class="valid-feedback">Todo bien</div>
+                        <div class="invalid-feedback">Por favor, ingrese solo letras en el primer apellido</div>
             </div>
-            <div class="input-field half-width">
-                <label for="lastName">Segundo Apellido *</label>
-                <input type="text" id="lastName" name="segundo_apellido">
+            <div class="col-md-6 form-floating mb-3">
+                <input type="text" class="form-control" id="lastName" name="segundo_apellido" placeholder="Segundo Apellido" required pattern="[A-Za-z]+" title="Solo se permiten letras en el segundo apellido">
+                <label for="lastName" class="text-dark">Segundo Apellido *</label>
+                <div class="valid-feedback">Todo bien</div>
+                        <div class="invalid-feedback">Por favor, ingrese solo letras en el segundo apellido</div>
             </div>
         </div>
-        <div class="line-fields">
-            <div class="input-field half-width">
-                <label for="vejp">VEJP</label>
-                <select id="vejp" name="vejp">
+        <div class="row mb-3">
+            <div class="col-md-6 form-floating mb-3">
+                <select class="form-select" id="vejp" name="vejp" aria-label="VEJP">
                     <?php echo loadTipoCedulaOptions($conn); ?>
                 </select>
+                <label for="vejp" class="text-dark">Tipo de Identificación</label>
             </div>
-            <div class="input-field half-width">
-                <label for="cedula">Cédula *</label>
-                <input type="text" id="cedula" name="cedula">
+            <div class="col-md-6 form-floating mb-3">
+                <input type="text" class="form-control" id="cedula" name="cedula" placeholder="Cédula" required pattern="[0-9]+" title="Por favor, ingrese solo números">
+                <label for="cedula" class="text-dark">Cédula *</label>
+                <div class="valid-feedback">Todo bien</div>
+                        <div class="invalid-feedback">Por favor, ingrese solo números</div>
             </div>
         </div>
-        <div class="input-field full-width">
-            <label for="phone">Teléfono *</label>
-            <input type="tel" id="phone" name="telefono" required>
+        <div class="form-floating mb-3">
+            <input type="tel" class="form-control" id="phone" name="telefono" placeholder="Teléfono" required pattern="[0-9]+" title="Por favor, ingrese solo números">
+            <label for="phone" class="text-dark">Teléfono *</label>
+            <div class="valid-feedback">Todo bien</div>
+                    <div class="invalid-feedback">El Teléfono solo puede contener números</div>
         </div>
-        <div class="input-field full-width">
-            <label for="dob">Fecha de Nacimiento *</label>
-            <input type="date" id="dob" name="fecha_nacimiento" required>
+        <div class="form-floating mb-3">
+            <input type="date" class="form-control" id="dob" name="fecha_nacimiento" placeholder="Fecha de Nacimiento" required max="<?php echo date('Y-m-d', strtotime('-1 day')); ?>">
+            <label for="dob" class="text-dark">Fecha de Nacimiento *</label>
+            <div class="valid-feedback">Todo bien</div>
+                    <div class="invalid-feedback">Por favor, seleccione una fecha válida </div>
         </div>
-        <div class="input-field full-width">
-            <label for="email">Correo *</label>
-            <input type="email" id="email" name="correo" required>
+        <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="email" name="correo" placeholder="Correo" required pattern="^\w+@(gmail\.com|hotmail\.com)$" title="Ingrese un correo válido (ej. usuario@gmail.com)">
+            <label for="email" class="text-dark">Correo *</label>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese un correo válido (@gmail.com o @hotmail.com)</div>
         </div>
-        <div class="input-field half-width">
-        <label for="state">Estado *</label>
-        <select id="state" name="estado" required onchange="showMunicipios()">
-            <?php echo loadEstadosOptions($conn); ?>
-        </select>
-    </div>
-    <div class="input-field half-width">
-        <label for="city">Municipio *</label>
-        <select id="city" name="municipio" required disabled>
-            <option value=''>Seleccione un estado primero</option>
-        </select>
-    </div>
-        <div class="input-field full-width">
-            <label for="direccion">Descripción de dirección:</label>
-            <input type="text" id="direccion" name="descripcion" placeholder="Ingrese una descripción de su dirección">
+        <div class="row mb-3">
+            <div class="col-md-6 form-floating mb-3">
+                <select class="form-select" id="state" name="estado" placeholder="Estado" required onchange="showMunicipios()">
+                    <?php echo loadEstadosOptions($conn); ?>
+                </select>
+                <label for="state" class="text-dark">Estado *</label>
+                <div class="valid-feedback">Todo bien</div>
+                        <div class="invalid-feedback">Seleccione un estado</div>
+            </div>
+            <div class="col-md-6 form-floating mb-3">
+                <select class="form-select" id="city" name="municipio" placeholder="Municipio" required disabled>
+                    <option value=''>Seleccione un estado primero</option>
+                </select>
+                <label for="city" class="text-dark">Municipio *</label>
+            </div>
         </div>
-        <div class="section-title">Datos de la cita</div>
-        <div class="input-field full-width">
-            <label for="date">Fecha de la Cita *</label>
-            <input type="date" id="date" name="fecha_cita" required>
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="direccion" name="descripcion" placeholder="Ingrese una descripción de su dirección" required>
+            <label for="direccion" class="text-dark">Descripción de dirección</label>
+            <div class="valid-feedback">Todo bien</div>
+                    <div class="invalid-feedback">Invalido</div>
         </div>
-        <div class="input-field full-width">
+        <div class="mb-3">
+            <h3 class="section-title">Datos de la cita</h3>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="date" class="form-control" id="date" name="fecha_cita" placeholder="Fecha de la Cita" required min="<?php echo date('Y-m-d'); ?>">
+            <label for="date" class="text-dark">Fecha de la Cita *</label>
+            <div class="valid-feedback">Todo bien</div>
+                    <div class="invalid-feedback">Por favor, seleccione una fecha válida </div>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="time" class="form-control" id="hora_atencion" name="hora_atencion" placeholder="Hora de Atención" required onchange="actualizarHoraFin()">
             <label for="hora_atencion">Hora de Atención (45min) *</label>
-            <input type="time" id="hora_atencion" name="hora_atencion" required onchange="actualizarHoraFin()">
         </div>
-        <div class="input-field full-width">
+        <div class="form-floating mb-3">
+            <input type="time" class="form-control" id="hora_fin" name="hora_fin" placeholder="Hora de Fin" readonly>
             <label for="hora_fin">Hora de Fin *</label>
-            <input type="time" id="hora_fin" name="hora_fin" readonly>
         </div>
-        <div class="input-field full-width">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="price" name="monto" value="<?php echo getPrecioCitaAdulto($conn); ?>" placeholder="Monto" required readonly>
             <label for="price">Monto *</label>
-            <input type="text" id="price" name="monto" value="<?php echo getPrecioCitaAdulto($conn); ?>" required readonly>
         </div>
-        <button type="submit">Agendar</button>
+        <button type="submit" class="btn btn-primary">Agendar</button>
     </form>
 </div>
 
 
 <div id="partner-form" class="container hide">
-    <form method="POST" action="insertar_datosP.php">
+    <form class="row g-3 needs-validation" novalidate method="POST" action="insertar_datosP.php">
         <div class="section-title">Datos Del Paciente</div>
         <div class="line-fields">
             <div class="input-field half-width">
-                <label for="firstName">Primer Nombre *</label>
-                <input type="text" id="firstName" name="firstName">
-            </div>
+                <label for="firstName">Primer Nombre *</label> 
+                </div>
+            <input type="text" id="firstName" name="firstName" required pattern="[A-Za-z]+" title="Solo se permiten letras en el primer nombre"> 
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese solo letras en el primer nombre</div>
             <div class="input-field half-width">
                 <label for="secondName">Segundo Nombre *</label>
-                <input type="text" id="secondName" name="secondName">
+                <input type="text" id="secondName" name="secondName" required pattern="[A-Za-z]+" title="Solo se permiten letras en el segundo nombre">
+                <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese solo letras en el segundo nombre</div>
             </div>
         </div>
         <div class="line-fields">
             <div class="input-field half-width">
                 <label for="firstLastName">Primer Apellido *</label>
-                <input type="text" id="firstLastName" name="firstLastName">
+                <input type="text" id="firstLastName" name="firstLastName" required pattern="[A-Za-z]+" title="Solo se permiten letras en el primer apellido">
+                <div class="valid-feedback">Todo bien</div>
+                 <div class="invalid-feedback">Por favor, ingrese solo letras en el primer apellido</div>
             </div>
             <div class="input-field half-width">
                 <label for="lastName">Segundo Apellido *</label>
-                <input type="text" id="lastName" name="lastName">
+                <input type="text" id="lastName" name="lastName" required pattern="[A-Za-z]+" title="Solo se permiten letras en el segundo apellido">
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Por favor, ingrese solo letras en el segundo apellido</div>
             </div>
         </div>
         <div class="line-fields">
@@ -507,26 +544,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div class="input-field half-width">
                 <label for="cedula">Cédula *</label>
-                <input type="text" id="cedula" name="cedula">
+                <input type="text" id="cedula" name="cedula" required pattern="[0-9]+" title="Por favor, ingrese solo números">
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Por favor, ingrese solo números</div>
             </div>
         </div>
         <div class="input-field full-width">
             <label for="phone">Teléfono *</label>
-            <input type="tel" id="phone" name="phone">
+            <input type="tel" id="phone" name="phone" required pattern="[0-9]+" title="Por favor, ingrese solo números">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">El Teléfono solo puede contener números</div>
         </div>
         <div class="input-field full-width">
             <label for="dob">Fecha de Nacimiento *</label>
-            <input type="date" id="dob" name="dob">
+            <input type="date" id="dob" name="dob" required max="<?php echo date('Y-m-d', strtotime('-1 day')); ?>">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, seleccione una fecha válida </div>
         </div>
         <div class="input-field full-width">
             <label for="email">Correo *</label>
-            <input type="email" id="email" name="email">
+            <input type="email" id="email" name="email" required pattern="^\w+@(gmail\.com|hotmail\.com)$" title="Ingrese un correo válido (ej. usuario@gmail.com)">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese un correo válido (@gmail.com o @hotmail.com)</div>
         </div>
         <div class="input-field half-width">
         <label for="state_partner">Estado *</label>
         <select id="state_partner" name="estado" required onchange="showMunicipiosPartner()">
             <?php echo loadEstadosOptions($conn); ?>
         </select>
+        <div class="valid-feedback">Todo bien</div>
+        <div class="invalid-feedback">Seleccione un estado</div>
     </div>
     <div class="input-field half-width">
         <label for="city_partner">Municipio *</label>
@@ -537,26 +584,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="input-field full-width">
             <label for="direccion">Descripción de dirección:</label>
             <input type="text" id="direccion" name="descripcion" placeholder="Ingrese una descripción de su dirección">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Invalido</div>
         </div>
         <div class="section-title">Datos de la Pareja</div>
         <div class="line-fields">
             <div class="input-field half-width">
                 <label for="partnerFirstName">Primer Nombre *</label>
-                <input type="text" id="partnerFirstName" name="partnerFirstName">
+                <input type="text" id="partnerFirstName" name="partnerFirstName" required pattern="[A-Za-z]+" title="Solo se permiten letras en el primer nombre">
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Por favor, ingrese solo letras en el primer nombre</div>
             </div>
             <div class="input-field half-width">
                 <label for="partnerSecondName">Segundo Nombre *</label>
-                <input type="text" id="partnerSecondName" name="partnerSecondName">
+                <input type="text" id="partnerSecondName" name="partnerSecondName" required pattern="[A-Za-z]+" title="Solo se permiten letras en el segundo nombre">
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Por favor, ingrese solo letras en el segundo nombre</div>
             </div>
         </div>
         <div class="line-fields">
             <div class="input-field half-width">
                 <label for="partnerFirstLastName">Primer Apellido *</label>
-                <input type="text" id="partnerFirstLastName" name="partnerFirstLastName">
+                <input type="text" id="partnerFirstLastName" name="partnerFirstLastName" required pattern="[A-Za-z]+" title="Solo se permiten letras en el primer apellido">
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Por favor, ingrese solo letras en el primer apellido</div>
             </div>
             <div class="input-field half-width">
                 <label for="partnerLastName">Segundo Apellido *</label>
-                <input type="text" id="partnerLastName" name="partnerLastName">
+                <input type="text" id="partnerLastName" name="partnerLastName" required pattern="[A-Za-z]+" title="Solo se permiten letras en el segundo apellido">
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Por favor, ingrese solo letras en el segundo apellido</div>
             </div>
         </div>
         <div class="line-fields">
@@ -568,26 +625,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div class="input-field half-width">
                 <label for="partnerCedula">Cédula *</label>
-                <input type="text" id="partnerCedula" name="partnerCedula">
+                <input type="text" id="partnerCedula" name="partnerCedula" required pattern="[0-9]+" title="Por favor, ingrese solo números">
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Por favor, ingrese solo números</div>
             </div>
         </div>
         <div class="input-field full-width">
             <label for="partnerPhone">Teléfono *</label>
-            <input type="tel" id="partnerPhone" name="partnerPhone">
+            <input type="tel" id="partnerPhone" name="partnerPhone" required pattern="[0-9]+" title="Por favor, ingrese solo números">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">El Teléfono solo puede contener números</div>
         </div>
         <div class="input-field full-width">
             <label for="partnerDob">Fecha de Nacimiento *</label>
-            <input type="date" id="partnerDob" name="partnerDob">
+            <input type="date" id="partnerDob" name="partnerDob" required max="<?php echo date('Y-m-d', strtotime('-1 day')); ?>">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, seleccione una fecha válida </div>
         </div>
         <div class="input-field full-width">
             <label for="partnerEmail">Correo *</label>
-            <input type="email" id="partnerEmail" name="partnerEmail">
+            <input type="email" id="partnerEmail" name="partnerEmail" required pattern="^\w+@(gmail\.com|hotmail\.com)$" title="Ingrese un correo válido (ej. usuario@gmail.com)">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese un correo válido (@gmail.com o @hotmail.com)</div>
         </div>
         <div class="input-field half-width">
         <label for="state_p">Estado *</label>
         <select id="state_p" name="estado2" required onchange="showMunicipiosP()">
             <?php echo loadEstadosOptions($conn); ?>
         </select>
+        <div class="valid-feedback">Todo bien</div>
+         <div class="invalid-feedback">Seleccione un estado</div>
     </div>
     <div class="input-field half-width">
         <label for="city_p">Municipio *</label>
@@ -598,11 +665,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="input-field full-width">
             <label for="direccion">Descripción de dirección:</label>
             <input type="text" id="direccion" name="descripcion" placeholder="Ingrese una descripción de su dirección">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Invalido</div>
         </div>
         <div class="section-title">Datos de la cita</div>
         <div class="input-field full-width">
             <label for="partnerDate">Fecha de la Cita *</label>
-            <input type="date" id="partnerDate" name="partnerDate">
+            <input type="date" id="partnerDate" name="partnerDate"  required min="<?php echo date('Y-m-d'); ?>">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, seleccione una fecha válida </div>
         </div>
         <div class="input-field full-width">
             <label for="partnerTime">Hora de Atención (45min) *</label>
@@ -619,24 +690,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <button type="submit">Agendar</button>
     </form>
 </div>
-
 <div id="infant-form" class="container hide">
-    <form class="form" method="POST" action="insertar_datosI.php">
+    <form class="row g-3 needs-validation" novalidate method="POST" action="insertar_datosI.php">
         <div class="input-field">
             <label for="firstName">Primer Nombre *</label>
-            <input type="text" id="firstName" name="firstName" required>
+            <input type="text" id="firstName" name="firstName"  required pattern="[A-Za-z]+" title="Solo se permiten letras en el primer nombre">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese solo letras en el primer nombre</div>
         </div>
         <div class="input-field">
             <label for="secondName">Segundo Nombre</label>
-            <input type="text" id="secondName" name="secondName">
+            <input type="text" id="secondName" name="secondName" required pattern="[A-Za-z]+" title="Solo se permiten letras en el segundo nombre">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese solo letras en el segundo nombre</div>
         </div>
         <div class="input-field">
             <label for="firstLastName">Primer Apellido *</label>
-            <input type="text" id="firstLastName" name="firstLastName" required>
+            <input type="text" id="firstLastName" name="firstLastName" required pattern="[A-Za-z]+" title="Solo se permiten letras en el primer apellido">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese solo letras en el primer apellido</div>
         </div>
         <div class="input-field">
             <label for="secondLastName">Segundo Apellido</label>
-            <input type="text" id="secondLastName" name="secondLastName">
+            <input type="text" id="secondLastName" name="secondLastName" required pattern="[A-Za-z]+" title="Solo se permiten letras en el segundo apellido">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese solo letras en el segundo apellido</div>
         </div>
         <div class="input-field half-width">
             <label for="vejp">VEJP</label>
@@ -646,29 +724,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
         <div class="input-field half-width">
             <label for="idNumber">Cédula *</label>
-            <input type="text" id="idNumber" name="idNumber" required>
+            <input type="text" id="idNumber" name="idNumber" required pattern="[0-9]+" title="Por favor, ingrese solo números">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese solo números</div>
         </div>
         <div class="input-field full-width">
             <label for="direccion">Numero de hijo:</label>
-            <input type="text" id="Nhijo" name="Nhijo" >
+            <input type="text" id="Nhijo" name="Nhijo" required pattern="[0-9]+" title="Por favor, ingrese solo números">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese solo números</div>
         </div>
         <div class="input-field">
             <label for="phone">Teléfono *</label>
-            <input type="tel" id="phone" name="phone" required>
+            <input type="tel" id="phone" name="phone" required pattern="[0-9]+" title="Por favor, ingrese solo números">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese solo números</div>
         </div>
         <div class="input-field">
             <label for="birthDate">Fecha de Nacimiento *</label>
-            <input type="date" id="birthDate" name="birthDate" required>
+            <input type="date" id="birthDate" name="birthDate" required max="<?php echo date('Y-m-d', strtotime('-1 day')); ?>">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, seleccione una fecha válida </div>
         </div>
         <div class="input-field">
             <label for="email">Correo *</label>
-            <input type="email" id="email" name="email" required>
+            <input type="email" id="email" name="email" required pattern="^\w+@(gmail\.com|hotmail\.com)$" title="Ingrese un correo válido (ej. usuario@gmail.com)">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese un correo válido (@gmail.com o @hotmail.com)</div>
         </div>
         <div class="input-field half-width">
         <label for="state">Estado *</label>
         <select id="state_i" name="estado" required onchange="showMunicipiosI()">
             <?php echo loadEstadosOptions($conn); ?>
         </select>
+        <div class="valid-feedback">Todo bien</div>
+        <div class="invalid-feedback">Seleccione un estado</div>
     </div>
     <div class="input-field half-width">
         <label for="city">Municipio *</label>
@@ -678,32 +768,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
         <div class="input-field full-width">
             <label for="direccion">Descripción de dirección:</label>
-            <input type="text" id="direccion" name="descripcion" placeholder="Ingrese una descripción de su dirección">
+            <input type="text" id="direccion" name="descripcion" placeholder="Ingrese una descripción de su dirección" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Invalido</div>
         </div>
         
         <div class="input-field">
             <label for="childFirstName">Primer Nombre del Niño</label>
-            <input type="text" id="childFirstName" name="childFirstName">
+            <input type="text" id="childFirstName" name="childFirstName" required pattern="[A-Za-z]+" title="Solo se permiten letras en el segundo apellido">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Solo se permiten letras</div>
         </div>
         <div class="input-field">
             <label for="childSecondName">Segundo Nombre del Niño</label>
-            <input type="text" id="childSecondName" name="childSecondName">
+            <input type="text" id="childSecondName" name="childSecondName" required pattern="[A-Za-z]+" title="Solo se permiten letras en el segundo apellido">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Solo se permiten letras</div>
         </div>
         <div class="input-field">
             <label for="childFirstLastName">Primer Apellido del Niño *</label>
-            <input type="text" id="childFirstLastName" name="childFirstLastName" required>
+            <input type="text" id="childFirstLastName" name="childFirstLastName" required pattern="[A-Za-z]+" title="Solo se permiten letras en el segundo apellido">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Solo se permiten letras</div>
         </div>
         <div class="input-field">
             <label for="childSecondLastName">Segundo Apellido del Niño</label>
-            <input type="text" id="childSecondLastName" name="childSecondLastName">
+            <input type="text" id="childSecondLastName" name="childSecondLastName" required pattern="[A-Za-z]+" title="Solo se permiten letras en el segundo apellido">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Solo se permiten letras</div>
         </div>
         <div class="input-field">
             <label for="childBirthDate">Fecha de Nacimiento del Niño *</label>
-            <input type="date" id="childBirthDate" name="childBirthDate" required>
+            <input type="date" id="childBirthDate" name="childBirthDate" required max="<?php echo date('Y-m-d', strtotime('-1 day')); ?>">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Ingrese una fecha</div>
         </div>
         <div class="input-field full-width">
             <label for="partnerDate">Fecha de la Cita *</label>
-            <input type="date" id="partnerDate" name="partnerDate">
+            <input type="date" id="partnerDate" name="partnerDate" required min="<?php echo date('Y-m-d'); ?>">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Ingrese una fecha</div>
         </div>
         <div class="input-field full-width">
             <label for="appointmentTime">Hora de Atención (45min) *</label>
@@ -722,6 +826,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </form>
 </div>
+
 
 
 
@@ -935,50 +1040,70 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- Resultado de la búsqueda -->
     <div id="resultado-busqueda"></div>
 
-    <form method="POST" action="insertarDatoshm.php" id="historial-formulario">
+    <form class="row g-3 needs-validation" novalidate method="POST" action="insertarDatoshm.php" id="historial-formulario">
         <div class="section">
             <h2>I. DATOS DE IDENTIFICACIÓN</h2>
-            <div class="input-group">
-                <label>Nombre:</label>
-                <input type="text" name="nombre" required>
-            </div>
+            <div class="input-field full-width">
+            <label>Nombre:</label>
+            <input type="text" name="nombre" required pattern="[A-Za-z]+" title="Solo se permiten letras en el primer nombre">
+            <div class="valid-feedback">Todo bien</div>
+             <div class="invalid-feedback">Inválido</div>
+        </div>
+
             <div class="flex">
-                <div class="input-group">
+                <div class="input-field full-width">
                     <label>Cédula:</label>
-                    <input type="text" name="cedula" required>
+                    <input type="text" name="cedula" required pattern="[0-9]+" title="Por favor, ingrese solo números">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese solo números</div>
                 </div>
-                <div class="input-group">
+                <div class="input-field full-width">
                     <label>Fecha de Nacimiento:</label>
-                    <input type="date" name="fecha_nacimiento" required>
+                    <input type="date" name="fecha_nacimiento" required max="<?php echo date('Y-m-d', strtotime('-1 day')); ?>">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, seleccione una fecha válida </div>
                 </div>
             </div>
             <div class="flex">
-                <div class="input-group">
+                <div class="input-field full-width">
                     <label>Escolaridad:</label>
-                    <input type="text" name="escolaridad">
+                    <input type="text" name="escolaridad" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
                 </div>
-                <div class="input-group">
-                    <label>Promedio:</label>
-                    <input type="number" name="promedio" step="0.01">
-                </div>
+            <div class="input-field full-width">
+                 <label>Promedio:</label>
+                <input type="number" name="promedio" step="0.01" min="0" max="20" required>
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Inválido</div>
+            </div>
             </div>
             <div class="flex">
-                <div class="input-group">
+                <div class="input-field full-width">
                     <label>Escuela:</label>
-                    <input type="text" name="escuela">
+                    <input type="text" name="escuela" required>
+                    <div class="valid-feedback">Todo bien</div>
+                    <div class="invalid-feedback">Inválido</div>>
                 </div>
-                <div class="input-group">
+                <div class="input-field full-width">
                     <label>Lugar que ocupa en la familia:</label>
-                    <input type="text" name="lugar_familia">
+                    <input type="text" name="lugar_familia" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
+
                 </div>
             </div>
-            <div class="input-group">
+            <div class="input-field full-width">
                 <label>Dirección:</label>
-                <input type="text" name="direccion">
+                <input type="text" name="direccion" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
             </div>
-            <div class="input-group">
+            <div class="input-field full-width">
                 <label>Teléfono:</label>
-                <input type="text" name="telefono">
+                <input type="text" name="telefono" required pattern="[0-9]+" title="Por favor, ingrese solo números">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese solo números</div>
             </div>
         </div>
 
@@ -986,25 +1111,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <div class="section">
             <h2>II. FACTORES QUE MOTIVAN A LA CONSULTA</h2>
-            <div class="textarea-group">
-                <label>Motivos de consulta:</label>
-                <textarea name="motivos_consulta"></textarea>
-            </div>
-            <div class="input-group">
+        <div class="textarea-group">
+            <label>Motivos de consulta:</label>
+            <textarea name="motivos_consulta" required></textarea>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
+        </div>
+
+            <div class="input-field full-width">
                 <label>Referido por:</label>
-                <input type="text" name="referido_por">
+                <input type="text" name="referido_por" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
             </div>
-            <div class="input-group">
+            <div class="input-field full-width">
                 <label>Diagnóstico orgánico:</label>
-                <input type="text" name="diagnostico_organico">
+                <input type="text" name="diagnostico_organico" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>Actitud de los padres ante el problema:</label>
-                <textarea name="actitud_padres"></textarea>
+                <textarea name="actitud_padres" required></textarea>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>Estado emocional actual del Niño (a):</label>
-                <textarea name="estado_emocional"></textarea>
+                <textarea name="estado_emocional" required></textarea>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
             </div>
         </div>
 
@@ -1012,86 +1148,118 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h2>III. FACTORES FÍSICOS</h2>
             <div class="textarea-group">
                 <label>1. DESARROLLO PRENATAL Y NATAL:</label>
-                <textarea name="desarrollo_prenatal"></textarea>
+                <textarea name="desarrollo_prenatal"required></textarea>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>2. DESARROLLO DE LA PRIMERA INFANCIA:</label>
-                <textarea name="desarrollo_primera_infancia"></textarea>
+                <textarea name="desarrollo_primera_infancia"required></textarea>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
             </div>
         </div>
 
         <div class="section">
             <h2>IV. FACTORES FAMILIARES</h2>
-            <div class="input-group">
+            <div class="input-field full-width">
                 <label>1. DATOS FAMILIARES:</label>
                 <div class="flex">
-                    <div class="input-group">
+                    <div class="input-field full-width">
                         <label>Papá - Nombre:</label>
-                        <input type="text" name="papa_nombre">
+                        <input type="text" name="papa_nombre" required pattern="[A-Za-z]+" title="Solo se permiten letras en el primer nombre">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese solo letras</div>
                     </div>
-                    <div class="input-group">
+                    <div class="input-field full-width">
                         <label>Papá - Apellido:</label>
-                        <input type="text" name="papa_apellido">
+                        <input type="text" name="papa_apellido" required pattern="[A-Za-z]+" title="Solo se permiten letras en el primer nombre">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese solo letras</div>
                     </div>
 
-                    <div class="input-group">
+                    <div class="input-field full-width">
                         <label>Mamá - Nombre:</label>
-                        <input type="text" name="mama_nombre">
+                        <input type="text" name="mama_nombre" required pattern="[A-Za-z]+" title="Solo se permiten letras en el primer nombre">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese solo letras</div>
                     </div>
-                    <div class="input-group">
+                    <div class="input-field full-width">
                         <label>Mamá - Apellido:</label>
-                        <input type="text" name="mama_apellido">
+                        <input type="text" name="mama_apellido" required pattern="[A-Za-z]+" title="Solo se permiten letras en el primer nombre">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese solo letras</div>
                     </div>
 
                 </div>
                 <div class="flex">
-                    <div class="input-group">
+                    <div class="input-field full-width">
                         <label>Papá - Salud física:</label>
-                        <input type="text" name="papa_salud_fisica">
+                        <input type="text" name="papa_salud_fisica" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
                     </div>
-                    <div class="input-group">
+                    <div class="input-field full-width">
                         <label>Mamá - Salud física:</label>
-                        <input type="text" name="mama_salud_fisica">
+                        <input type="text" name="mama_salud_fisica" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
                     </div>
                 </div>
                 <div class="flex">
-                    <div class="input-group">
+                    <div class="input-field full-width">
                         <label>Papá - Nivel educativo:</label>
-                        <input type="text" name="papa_nivel_educativo">
+                        <input type="text" name="papa_nivel_educativo" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
                     </div>
-                    <div class="input-group">
+                    <div class="input-field full-width">
                         <label>Mamá - Nivel educativo:</label>
-                        <input type="text" name="mama_nivel_educativo">
+                        <input type="text" name="mama_nivel_educativo" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
                     </div>
                 </div>
                 <div class="flex">
-                    <div class="input-group">
+                    <div class="input-field full-width">
                         <label>Papá - Trabajo actual:</label>
-                        <input type="text" name="papa_trabajo_actual">
+                        <input type="text" name="papa_trabajo_actual" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
                     </div>
-                    <div class="input-group">
+                    <div class="input-field full-width">
                         <label>Mamá - Trabajo actual:</label>
-                        <input type="text" name="mama_trabajo_actual">
+                        <input type="text" name="mama_trabajo_actual" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
                     </div>
                 </div>
                 <div class="flex">
-                    <div class="input-group">
+                    <div class="input-field full-width">
                         <label>Papá - Horario de trabajo:</label>
-                        <input type="text" name="papa_horario_trabajo">
+                        <input type="text" name="papa_horario_trabajo" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
                     </div>
-                    <div class="input-group">
+                    <div class="input-field full-width">
                         <label>Mamá - Horario de trabajo:</label>
-                        <input type="text" name="mama_horario_trabajo">
+                        <input type="text" name="mama_horario_trabajo" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
                     </div>
                 </div>
                 <div class="flex">
-                    <div class="input-group">
+                    <div class="input-field full-width">
                         <label>Papá - Hábitos:</label>
-                        <input type="text" name="papa_habitos">
+                        <input type="text" name="papa_habitos" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
                     </div>
-                    <div class="input-group">
+                    <div class="input-field full-width">
                         <label>Mamá - Hábitos:</label>
-                        <input type="text" name="mama_habitos">
+                        <input type="text" name="mama_habitos" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
                     </div>
                 </div>
             </div>
@@ -1099,53 +1267,77 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="textarea-group">
                 <label>2. EXPERIENCIAS TRAUMÁTICAS DEL NIÑO:</label>
             </div>
-            <div class="input-group">
+            <div class="input-field full-width">
                 <label>Pérdida de algún familiar o ser querido:</label>
-                <input type="text" name="perdida_familiar">
+                <input type="text" name="perdida_familiar" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
             </div>
-            <div class="input-group">
+            <div class="input-field full-width">
                 <label>¿Quién era?:</label>
-                <input type="text" name="quien_era">
+                <input type="text" name="quien_era" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>¿Cómo fue?:</label>
-                <textarea name="como_fue"></textarea>
+                <textarea name="como_fue" required></textarea>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
             </div>
-            <div class="input-group">
+            <div class="input-field full-width">
                 <label>Edad que tenía el niño:</label>
-                <input type="text" name="edad_nino">
+                <input type="text" name="edad_nino" required pattern="[0-9]+" title="Por favor, ingrese solo números">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese solo números</div>
             </div>
-            <div class="input-group">
+            <div class="input-field full-width">
                 <label>¿Presenció el suceso?:</label>
-                <input type="text" name="presencio_suceso">
+                <input type="text" name="presencio_suceso" required></textarea>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>Reacción del niño ante esto:</label>
-                <textarea name="reaccion_nino"></textarea>
+                <textarea name="reaccion_nino" required></textarea>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>Accidentes del niño:</label>
-                <textarea name="accidentes_nino"></textarea>
+                <textarea name="accidentes_nino" required></textarea>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>Castigos graves:</label>
-                <textarea name="castigos_graves"></textarea>
+                <textarea name="castigos_graves"required></textarea>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
             </div>
-            <div class="input-group">
+            <div class="input-field full-width">
                 <label>De parte de quién:</label>
-                <input type="text" name="parte_quien">
+                <input type="text" name="parte_quien" required>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
             </div>
-            <div class="input-group">
+            <div class="input-field full-width">
                 <label>Edad del niño:</label>
-                <input type="text" name="edad_castigos">
+                <input type="text" name="edad_castigos" required pattern="[0-9]+" title="Por favor, ingrese solo números">
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Por favor, ingrese solo números</div>
             </div>
             <div class="textarea-group">
                 <label>Los problemas del niño son causados por:</label>
-                <textarea name="problemas_causas"></textarea>
+                <textarea name="problemas_causas"required></textarea>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>Problemas físicos:</label>
-                <textarea name="problemas_fisicos"></textarea>
+                <textarea name="problemas_fisicos"required></textarea>
+            <div class="valid-feedback">Todo bien</div>
+            <div class="invalid-feedback">Inválido</div>
             </div>
         </div>
 
@@ -1156,23 +1348,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div class="textarea-group">
                 <label>a) COMIDA:</label>
-                <textarea name="comida"></textarea>
+                <textarea name="comida" required></textarea>
+                <div class="valid-feedback">Todo bien</div>
+             <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>b) SUEÑO:</label>
-                <textarea name="sueno"></textarea>
+                <textarea name="sueno" required></textarea>
+                <div class="valid-feedback">Todo bien</div>
+             <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>c) ELIMINACIONES:</label>
-                <textarea name="eliminaciones"></textarea>
+                <textarea name="eliminaciones" required></textarea>
+                <div class="valid-feedback">Todo bien</div>
+             <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>d) MANÍAS Y TICS:</label>
-                <textarea name="manias_tics"></textarea>
+                <textarea name="manias_tics" required></textarea>
+                <div class="valid-feedback">Todo bien</div>
+             <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>e) HISTORIA SEXUAL:</label>
-                <textarea name="historia_sexual"></textarea>
+                <textarea name="historia_sexual" required></textarea>
+                <div class="valid-feedback">Todo bien</div>
+             <div class="invalid-feedback">Inválido</div>
             </div>
 
             <div class="textarea-group">
@@ -1218,8 +1420,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
             </div>
             <label>Tendencias Destructivas:</label>
-                <textarea name="tendencias_destructivas"></textarea>
-            
+                <textarea name="tendencias_destructivas" required pattern="[A-Za-z]+" title="Solo se permiten letras en tendencias destructivas"></textarea>
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Solo puede contener letras</div>
         </div>
 
 
@@ -1227,47 +1430,69 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h2>VI. FACTORES HEREDITARIOS</h2>
             <div class="textarea-group">
                 <label>INCIDENCIA DE ANOMALÍAS EN FAMILIARES CONSANGUÍNEOS:</label>
-                <textarea name="incidencia_anomalias"></textarea>
+                <textarea name="incidencia_anomalias" required ></textarea>
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>TRATAMIENTO MÉDICO POR NERVIOSISMO:</label>
-                <textarea name="tratamiento_nerviosismo"></textarea>
+                <textarea name="tratamiento_nerviosismo" required></textarea>
+                <div class="valid-feedback">Todo bien</div>
+             <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>ALCOHOLISMO (GRADO), MANIFESTACIONES, ETC:</label>
-                <textarea name="alcoholismo"></textarea>
+                <textarea name="alcoholismo" required></textarea>
+                <div class="valid-feedback">Todo bien</div>
+             <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>ABUSO DE DROGAS, CALMANTES, ETC:</label>
-                <textarea name="abuso_drogas"></textarea>
+                <textarea name="abuso_drogas" required></textarea>
+                <div class="valid-feedback">Todo bien</div>
+             <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>DEBILIDAD MENTAL:</label>
-                <textarea name="debilidad_mental"></textarea>
+                <textarea name="debilidad_mental" required pattern="[A-Za-z]+" title="Solo se permiten letras en DEBILIDAD MENTAL"></textarea>
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Solo puede contener letras</div>
             </div>
             <div class="textarea-group">
                 <label>CONVULSIONES, DESMAYOS, TEMBLORES, ETC:</label>
-                <textarea name="convulsiones_desmayos"></textarea>
+                <textarea name="convulsiones_desmayos" required ></textarea>
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>ETS (ENFERMEDADES SEXUALES, FORMA, MOTIVOS):</label>
-                <textarea name="ets"></textarea>
+                <textarea name="ets" required pattern="[A-Za-z]+" title="Solo se permiten letras en ETS"></textarea>
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Solo puede contener letras</div>
             </div>
             <div class="textarea-group">
                 <label>SUICIDIO (FORMAS, MOTIVOS):</label>
-                <textarea name="suicidio"></textarea>
+                <textarea name="suicidio" required ></textarea>
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>Anormalidades (PROSTITUCIÓN, CRIMINALIDAD, DELITOS, RECLUSIÓN, ETC):</label>
-                <textarea name="anormalidades"></textarea>
+                <textarea name="anormalidades" required ></textarea>
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Inválido</div>
             </div>
             <div class="textarea-group">
                 <label>TRASTORNOS DEL HABLA (TARTAMUDEZ, SORDERA MUEDEZ, ETC):</label>
-                <textarea name="trastornos_habla"></textarea>
+                <textarea name="trastornos_habla" required pattern="[A-Za-z]+" title="Solo se permiten letras en SUICIDIO (FORMAS, MOTIVOS)"></textarea>
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Solo puede contener letras</div>
             </div>
             <div class="textarea-group">
                 <label>TRASTORNOS DE LA VISTA (CEGUERA, MIOPIA, ETC):</label>
-                <textarea name="trastornos_vista"></textarea>
+                <textarea name="trastornos_vista" required ></textarea>
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Inválido</div>
             </div>
         </div>
 
@@ -1275,21 +1500,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h2>VII. IMPRESIÓN PSICOLÓGICA</h2>
             <div class="textarea-group">
                 <label>(Signos y síntomas, personalidad, adaptación psicológica a la enfermedad, al tratamiento, cirugía, e internamientos, relación médico-paciente-enfermera, expectativas ante la patología):</label>
-                <textarea name="impresion_psicologica"></textarea>
+                <textarea name="impresion_psicologica" required ></textarea>
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Inválido</div>
             </div>
         </div>
 
         <div class="section">
             <h2>VIII. RECOMENDACIONES</h2>
             <div class="textarea-group">
-                <textarea name="recomendaciones"></textarea>
+                <textarea name="recomendaciones" required></textarea>
+                <div class="valid-feedback">Todo bien</div>
+                <div class="invalid-feedback">Inválido</div>
             </div>
         </div>
 
         <div class="section">
             <h2>IX. PLAN PSICOTERAPÉUTICO</h2>
             <div class="textarea-group">
-                <textarea name="plan_psicoterapeutico"></textarea>
+                <textarea name="plan_psicoterapeutico" required></textarea>
+                <div class="valid-feedback">Todo bien</div>
+             <div class="invalid-feedback">Inválido</div>
             </div>
         </div>
         <input type="submit" name="Save" value="Guardar">
@@ -1355,6 +1586,8 @@ if ($result->num_rows > 0) {
 
 </body>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
 <script>
 
@@ -1721,6 +1954,31 @@ function esHoraValida(hora) {
             xhr.open('GET', 'buscarHistorial.php?cedula=' + cedula, true);
             xhr.send();
         }
+
+</script>
+
+<script>
+
+// Ejemplo de JavaScript inicial para deshabilitar el envío de formularios si hay campos no válidos
+(function () {
+  'use strict'
+
+  // Obtener todos los formularios a los que queremos aplicar estilos de validación de Bootstrap personalizados
+  var forms = document.querySelectorAll('.needs-validation')
+
+  // Bucle sobre ellos y evitar el envío
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
 
 </script>
 

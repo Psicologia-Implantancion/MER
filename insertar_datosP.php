@@ -71,69 +71,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql_paciente = "INSERT INTO paciente (`Primer Nombre`, `Segundo Nombre`, `Primer Apellido`, `Segundo Apellido`, `Teléfono`, `Fecha_Nacimiento`, `Correo`, `ID_Direccion`, `Cedula`, `Tipo_Cedula`)
                          VALUES ('$firstName', '$secondName', '$firstLastName', '$lastName', '$phone', '$dob', '$email', '$direccion_id', '$cedula', '$vejp')";
         
-        // Validación de primer nombre y segundo nombre 
-if (!preg_match('/^[a-zA-Z ]+$/', $_POST['firstName']) || !preg_match('/^[a-zA-Z ]+$/', $_POST['secondName'])) { 
-    echo '<script>
-    alert("El primer nombre y segundo nombre solo pueden contener letras y espacios.");
-    window.history.back(); 
-  </script>
-  ';
-   exit();
-} 
-
-       // Validación de primer apellido y segundo apellido 
-    if (!preg_match('/^[a-zA-Z ]+$/', $_POST['firstLastName']) || !preg_match('/^[a-zA-Z ]+$/', $_POST['lastName'])) { 
-    echo '<script>
-    alert("El primer apellido y segundo apellido solo pueden contener letras y espacios.");
-    window.history.back(); 
-  </script>
-  ';
-   exit();
-} 
-// Validación para teléfono 
-if (!is_numeric($_POST['phone'])) {  
-    echo '
-        <script>
-            alert("El teléfono ingresado no es válido, el formato debe ser parecido al siguiente 0123-4567890");
-            window.history.back(); 
-        </script> 
-    ';
-    exit();
-}
-
-// Validación de la fecha de nacimiento 
-$dob = $_POST['dob']; 
-$hoy = date("Y-m-d"); 
- 
-if ($dob>= $hoy) { 
-    echo '<script>
-    alert("La fecha de nacimiento debe ser anterior a la fecha actual.");
-    window.history.back(); 
-  </script>
-  ';
-   exit(); 
-} 
-$email = filter_var($_POST["email"], FILTER_VALIDATE_EMAIL);
-    if($correo_valido && strpos($correo_valido, "@gmail.com") == false || $correo_valido && strpos($correo_valido, "@hotmail.com") == false){
-        echo '
-        <script>
-            alert("Error al guardar el correo electrónico");
-            window.history.back(); 
-        </script>
-    ';
-    exit;
-    }
-   
-
-   // Validación de formato para el campo de cédula 
-if (!preg_match('/^[0-9]+$/', $_POST['cedula'])) { 
-    echo'<script>
-    alert("La cédula debe contener solo números");
-    window.history.back(); 
-</script> 
-';
-exit(); 
-}  
         
         
         if ($conn->query($sql_paciente) === TRUE) {
@@ -149,69 +86,6 @@ exit();
                 $sql_pareja = "INSERT INTO cita_pareja (`Primer Nombre1`, `Segundo Nombre1`, `Primer Apellido1`, `Segundo Apellido1`, `Telefono1`, `Fecha_Nacimiento1`, `Correo1`, `ID_Direccion1`, `Cedula1`, `Tipo_Cedula`)
                                VALUES ('$partnerFirstName', '$partnerSecondName', '$partnerFirstLastName', '$partnerLastName', '$partnerPhone', '$partnerDob', '$partnerEmail', '$direccion_id2', '$partnerCedula', '$partnerVejp')";
                 
-                // Validación de primer nombre y segundo nombre 
-            if (!preg_match('/^[a-zA-Z ]+$/', $_POST['partnerFirstName']) || !preg_match('/^[a-zA-Z ]+$/', $_POST['partnerSecondName'])) { 
-                echo '<script>
-                alert("El primer nombre y segundo nombre solo pueden contener letras y espacios.");
-                window.history.back(); 
-            </script>
-            ';
-             exit();
-            } 
-
-       // Validación de primer apellido y segundo apellido 
-         if (!preg_match('/^[a-zA-Z ]+$/', $_POST['partnerFirstLastName']) || !preg_match('/^[a-zA-Z ]+$/', $_POST['partnerLastName'])) { 
-          echo '<script>
-        alert("El primer apellido y segundo apellido solo pueden contener letras y espacios.");
-        window.history.back(); 
-         </script>
-        ';
-        exit();
-        } 
-        // Validación para teléfono 
-        if (!is_numeric($_POST['partnerPhone'])) {  
-        echo '
-        <script>
-            alert("El teléfono ingresado no es válido");
-            window.history.back(); 
-        </script> 
-        ';
-         exit();
-        }
-
-        // Validación de la fecha de nacimiento 
-        $partnerDob = $_POST['partnerDob']; 
-        $hoy = date("Y-m-d"); 
- 
-        if ($partnerDob>= $hoy) { 
-        echo '<script>
-        alert("La fecha de nacimiento debe ser anterior a la fecha actual.");
-        window.history.back(); 
-        </script>
-        ';
-        exit(); 
-        } 
-        $email = filter_var($_POST["partnerEmail"], FILTER_VALIDATE_EMAIL);
-        if($correo_valido && strpos($correo_valido, "@gmail.com") == false || $correo_valido && strpos($correo_valido, "@hotmail.com") == false){
-        echo '
-        <script>
-            alert("Error al guardar el correo electrónico");
-            window.history.back(); 
-        </script>
-         ';
-        exit;
-         }
-   
-
-   // Validación de formato para el campo de cédula 
-        if (!preg_match('/^[0-9]+$/', $_POST['partnerCedula'])) { 
-        echo'<script>
-        alert("La cédula debe contener solo números");
-        window.history.back(); 
-    </script> 
-    ';
-    exit(); 
-    } 
                 
                 
                 if ($conn->query($sql_pareja) === TRUE) {
@@ -241,12 +115,6 @@ $row = $result->fetch_assoc();
 
 if ($row['count'] > 0) {
     // Si la fecha ya está registrada
-    echo '
-    <script>
-        alert("La fecha ya se encuentra registrada y no está disponible.");
-        window.history.back(); 
-    </script>
-    '; 
     exit(); 
 }
                     if ($conn->query($sql_fecha) === TRUE) {
@@ -257,35 +125,19 @@ if ($row['count'] > 0) {
                                      VALUES ('$fecha_id', '$partnerTime', '$hora_fin',  '$monto', 3, '$paciente_id', '$pareja_id', 1, '$user_id')";
                         // Validar formato de la hora de inicio
 if (!preg_match('/^[0-9]{2}:[0-9]{2}:[0-9]{2}$/', $partnerTime)) {
-    echo '
-    <script>
-        alert("La hora de inicio debe estar en el formato HH:MM:SS.");
-        window.history.back();
-    </script>
-    ';
     exit();
 }
 
 $nueva_cita_inicio = DateTime::createFromFormat('H:i:s', $partnerTime);
 if (!$nueva_cita_inicio) {
-    echo '
-    <script>
-        alert("La hora de inicio no es válida.");
-        window.history.back();
-    </script>
-    ';
+    
     exit();
 }
 
 // Validar que la hora de inicio esté en los intervalos permitidos
 $hora_inicio = (int)$nueva_cita_inicio->format('H');
 if (!($hora_inicio >= 8 && $hora_inicio < 12) && !($hora_inicio >= 13 && $hora_inicio < 16)) {
-    echo '
-    <script>
-        alert("La hora de atención debe estar entre 08:00-12:00 o 13:00-16:00.");
-        window.history.back();
-    </script>
-    ';
+    
     exit();
 }
 
@@ -304,12 +156,6 @@ if ($result->num_rows > 0) {
 
         // Verificar si hay solapamiento
         if ($nueva_cita_inicio < $cita_fin && $nueva_cita_fin > $cita_inicio) {
-            echo '
-            <script>
-                alert("La cita se solapa con una existente.");
-                window.history.back();
-            </script>
-            ';
             exit();
         }
     }
