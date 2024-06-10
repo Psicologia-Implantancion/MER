@@ -5,11 +5,6 @@ body {
   padding: 0;
   background-color: #005f43;
   color: rgb(243, 243, 243);
-  padding-bottom: 20em;
-  min-height: 100vh;
-  display: grid;
-  min-height: 100vh;
-  grid-template-rows: auto 1fr auto;
 }
 
 .container {
@@ -169,14 +164,11 @@ body {
   flex-direction: column;
   min-height: 100vh;
   position: relative;
-  padding-bottom: 20em; /* Espacio para el footer */
-  display: grid;
-  min-height: 100vh;
-  grid-template-rows: auto 1fr auto;
+  padding-bottom: 7em; /* Espacio para el footer */
 }
 
 .content {
-  flex: 3;
+  flex: 1;
   padding-bottom: 3.5em; /* Espacio para evitar que el contenido toque el footer */
 }
 
@@ -250,93 +242,4 @@ button[type="submit"] {
   
   }
   
-  /* formulario  historial medico */
-
-.container {
-  max-width: 960px;
-  margin: auto;
-  padding: 20px;
-}
-
-.section {
-  margin-bottom: 20px;
-}
-
-.input-field {
-  margin-bottom: 15px;
-}
-
-.input-field label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.flex {
-  display: flex;
-  gap: 15px;
-}
-
-.full-width {
-  flex: 1;
-}
-
-textarea {
-  width: 100%;
-  height: 100px;
-}
-
-textarea-group {
-  margin-bottom: 15px;
-}
-
-.checkbox-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.checkbox-group label {
-  flex: 1 1 30%;
-}
-
-button {
-  margin-right: 10px;
-  margin-bottom: 10px;
-}
-
-/* Estilo de feedback de validación */
-.valid-feedback {
-  display: none;
-}
-
-.invalid-feedback {
-  display: none;
-}
-
-input:valid ~ .valid-feedback {
-  display: block;
-}
-
-input:invalid ~ .invalid-feedback {
-  display: block;
-}
-
-textarea:valid ~ .valid-feedback {
-  display: block;
-}
-
-textarea:invalid ~ .invalid-feedback {
-  display: block;
-}
-
-@media (max-width: 768px) {
-  .flex {
-      flex-direction: column;
-  }
-}
-.img-fluid {
-  width: 10000px;
-  border-radius: 3%;
-  margin-top: auto;
-}
+  
