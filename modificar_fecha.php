@@ -56,7 +56,7 @@ if ($stmt_update_cita->execute() === false) {
 }
 
 // Redirigir a index.php/#agendar
-header("Location: index.php");
+header("Location: index.php#configuracion");
 exit();
 ?>
 

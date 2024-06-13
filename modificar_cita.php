@@ -24,7 +24,7 @@ if (isset($_POST['cita_seleccionada']) && isset($_POST['accion'])) {
         }
     }
     // Redirigir de nuevo a la página de citas agendadas
-    header('Location: index.php#agendar');
+    header('Location: index.php#citas-agendadas');
 } else {
     echo "Error: No se seleccionó ninguna cita o acción.";
 }

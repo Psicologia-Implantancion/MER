@@ -275,11 +275,11 @@ if ($result->num_rows > 0) {
 
 
 
- $sql_identificacion = "INSERT INTO historial_medico (ID_Psicologo,ID_Factores,ID_Fisico,ID_Familiares,ID_Personalidad_Conducta,ID_Hereditario,ID_Impresion,ID_Pronostico,Escolaridad, Promedio, Escuela, LugaQueOcupaFamilia, Telefono, Direccion, Cedula, Nombre, Fecha_Nacimiento)
- VALUES (1,'$motivacion_id',' $Ffisicos_id','$Ffamiliares_id',' $Conduc_id ','$hereditario_id','$impresion_id','$impresion_id','$escolaridad', '$promedio', '$escuela', '$lugar_familia', '$telefono', '$direccion', '$cedula','$nombre', '$fechaNac')";
+$sql_identificacion = "INSERT INTO historial_medico (ID_Psicologo,ID_Factores,ID_Fisico,ID_Familiares,ID_Personalidad_Conducta,ID_Hereditario,ID_Impresion,ID_Pronostico,Escolaridad, Promedio, Escuela, LugaQueOcupaFamilia, Telefono, Direccion, Cedula, Nombre, Fecha_Nacimiento)
+                    VALUES (1,'$motivacion_id',' $Ffisicos_id','$Ffamiliares_id',' $Conduc_id ','$hereditario_id','$impresion_id','$impresion_id','$escolaridad', '$promedio', '$escuela', '$lugar_familia', '$telefono', '$direccion', '$cedula','$nombre', '$fechaNac')";
 if ($conn->query($sql_identificacion) === TRUE) {
-header("Location: index.php#agendar");
-exit();
+    header("Location: index.php#historial-form");
+    exit();
 }
 
 

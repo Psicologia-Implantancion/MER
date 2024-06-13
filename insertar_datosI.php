@@ -135,28 +135,32 @@ if ($result->num_rows > 0) {
         }
     }
 }
-                    if ($conn->query($sql_cita) === TRUE) {
-                        header("Location: index.php#agendar");
-                        exit();
-                    } else {
-                        echo "Error al insertar la cita: " . $conn->error;
-                    }
-                } else {
-                    echo "Error al insertar la fecha: " . $conn->error;
-                }
-            } else {
-                echo "Error al insertar los datos del menor: " . $conn->error;
-            }
-        } else {
-            echo "Error al insertar los datos del paciente: " . $conn->error;
-        }
+if ($conn->query($sql_cita) === TRUE) {
+    if ($user_id == 2) {
+        header("Location: index.php#Lista-de-citas");
     } else {
-        echo "Error al insertar la dirección del paciente: " . $conn->error;
+        header("Location: index.php#citas-agendadas");
     }
-
-    $conn->close();
-} else {
-    header("Location: index.php");
     exit();
+} else {
+    echo "Error al insertar la cita: " . $conn->error;
+}
+} else {
+echo "Error al insertar la fecha: " . $conn->error;
+}
+} else {
+echo "Error al insertar los datos del menor: " . $conn->error;
+}
+} else {
+echo "Error al insertar los datos del paciente: " . $conn->error;
+}
+} else {
+echo "Error al insertar la dirección del paciente: " . $conn->error;
+}
+
+$conn->close();
+} else {
+header("Location: index.php#infant-form");
+exit();
 }
 ?>

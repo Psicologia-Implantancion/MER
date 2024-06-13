@@ -52,6 +52,6 @@ foreach ($_POST as $key => $value) {
 }
 
 // Redirigir de vuelta a la página de configuración
-header("Location: index.php");
+header("Location: index.php#configuracion");
 exit();
 ?>
